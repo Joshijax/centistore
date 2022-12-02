@@ -5,7 +5,7 @@ ALLOWED_HOSTS = ['127.0.0.1', "centiacollection.herokuapp.com"]
 
 INSTALLED_APPS += [
     'debug_toolbar'
-]
+] 
 
 MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
 
@@ -43,5 +43,3 @@ DATABASES = {
     }
 }
 
-STRIPE_PUBLIC_KEY = config('STRIPE_TEST_PUBLIC_KEY')
-STRIPE_SECRET_KEY = config('STRIPE_TEST_SECRET_KEY')

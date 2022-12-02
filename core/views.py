@@ -21,7 +21,7 @@ from django.contrib.auth import logout
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
 from .models import Category, Products, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, sub_Category
 from python_flutterwave import payment
-stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 payment.token = 'FLWSECK_TEST-aa528235ea8465216753394deccb2beb-X'
 
