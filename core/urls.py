@@ -17,7 +17,8 @@ from .views import (
     OrderSummaryView2,
     CheckoutView1,
     payment_response,
-    SearchView
+    SearchView,
+    CategoryArticlesListView
 )
 
 app_name = 'core'
@@ -31,6 +32,11 @@ urlpatterns = [
     path('checkout1/', CheckoutView1.as_view(), name='checkout1'),
     path('callback', payment_response, name='payment_response'),
     path('shop/', ShopView.as_view(), name='shop'),
+    path(
+        route='category/<str:slug>/<str:cate>',
+        view=CategoryArticlesListView.as_view(),
+        name='category_prod'
+    ),
     path('search/', SearchView.as_view(), name='search'),
     path('order-summary/', OrderSummaryView.as_view(), name='order-summary'),
     path('order-summary1/', OrderSummaryView2.as_view(), name='order-summary1'),
@@ -44,3 +50,4 @@ urlpatterns = [
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
     path('request-refund/', RequestRefundView.as_view(), name='request-refund')
 ] 
+

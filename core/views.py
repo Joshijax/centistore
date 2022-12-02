@@ -975,6 +975,31 @@ class RequestRefundView(View):
                 messages.info(self.request, "This order does not exist.")
                 return redirect("core:request-refund")
 
+class CategoryArticlesListView(ListView):
+    model = Products
+    paginate_by = 6
+    context_object_name = 'product_list'
+    # template_name = 'blog/category/category_articles.html'
+    template_name = 'new/category_view.html'
+
+    def get_queryset(self):
+        category = get_object_or_404(sub_Category, name=self.kwargs.get('slug'))
+        return Products.objects.filter(category=category)
+
+    def get_context_data(self, **kwargs):
+        context = super(CategoryArticlesListView, self).get_context_data(**kwargs)
+        context['categories'] = sub_Category.objects.all()[:8]
+
+        context['bestseller'] = Products.objects.filter().order_by('-sold')
+
+        context['thisweek'] = Products.objects.filter().order_by('-id')[:6]
+
+        context['explore'] = Products.objects.filter().order_by('-id')[:8]
+        context['explore2'] = Products.objects.filter().order_by('-id')[8:8]
+        return context
+
+
+
 
 def logout_request(request):
 

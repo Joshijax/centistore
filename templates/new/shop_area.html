@@ -73,6 +73,7 @@
             </div>
             <!-- End Single Product  -->
             {% empty %}
+            {% if query %}
             <table class="table axil-product-table axil-cart-table mb--40">
                 <tbody>
                     <tr>
@@ -80,6 +81,16 @@
                     </tr>
                 </tbody>
             </table>
+            {% else %}
+            <table class="table axil-product-table axil-cart-table mb--40">
+                <tbody>
+                    <tr>
+                        <td colspan='2'>No Product Found</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% endif %}
+
             {% endfor %}
             
         </div>

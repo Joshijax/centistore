@@ -5,12 +5,11 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>eTrade || Home-03</title>
     <meta name="robots" content="noindex, follow" />
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/images/logo/favi.png' %}">
 
     <!-- CSS
     ============================================ -->
@@ -27,7 +26,7 @@
     <link rel="stylesheet" href="{% static 'assets/css/vendor/base.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/style.min.css' %}">
     
-  <title>{% block head_title %}{% endblock %}</title>
+  <title>{% block head_title %}<title>CENTIA COLLECTION</title>{% endblock %}</title>
   {% block extra_head %}
   {% endblock %}
   <style>
@@ -64,7 +63,7 @@
 
 <body class="sticky-header">
   {% include "new/navbar1.html" %}
-    <div class="mt-5 pt-4">
+   
       
     {% if messages %}
         {% for message in messages %}

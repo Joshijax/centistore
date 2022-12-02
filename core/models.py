@@ -53,6 +53,13 @@ class sub_Category(models.Model):
     def __str__(self):
         return self.name + " for " + self.category.name
 
+    def get_absolute_url(self):
+        return reverse("core:category_prod", kwargs={
+            'slug': self.name,
+            "cate": self.category.name
+        })
+
+
 
 class colors(models.Model):
     name = models.CharField(max_length=100)
