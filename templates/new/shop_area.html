@@ -1,0 +1,131 @@
+{% load static %}
+{% load cart_template_tags %}
+<!-- Start Shop Area  -->
+<div class="axil-shop-area axil-section-gap bg-color-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="axil-shop-top">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <div class="category-select">
+
+                                <!-- Start Single Select  -->
+                                <select class="single-select">
+                                    <option value="none" selected disabled hidden>Categories</option>
+                                    {% for cate in categories %}
+                                    <option>{{cate.name}} for {{cate.category.name}}</option>
+                                    {% endfor %}
+                                </select>
+                                <!-- End Single Select  -->
+
+                            </div>
+                        </div>
+                        {% comment %} <div class="col-lg-3">
+                            <div class="category-select mt_md--10 mt_sm--10 justify-content-lg-end">
+                                <!-- Start Single Select  -->
+                                <select class="single-select">
+                                    <option>Sort by Latest</option>
+                                    <option>Sort by Name</option>
+                                    <option>Sort by Price</option>
+                                    <option>Sort by Viewed</option>
+                                </select>
+                                <!-- End Single Select  -->
+                            </div>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row--15">
+            {% for item in product_list %}
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="axil-product product-style-one has-color-pick mt--40">
+                    <div class="thumbnail">
+                        <a href="{{ item.get_absolute_url }}">
+                            <img data-sal="fade" data-sal-delay="100" data-sal-duration="1500" src="{{item.image.url}}" alt="Product Images">
+                        </a>
+                        {% if item.discount_price %}
+                        <div class="label-block label-right">
+                            <div class="product-badget">{{item|getDiscountPer}}% Off</div>
+                        </div>
+                        {% endif %}
+                        <div class="product-hover-action">
+                            <ul class="cart-action">
+                                {% comment %} <li class="quickview"><a href="#" data-bs-toggle="modal" data-bs-target="#quick-view-modal"><i class="far fa-eye"></i></a></li> {% endcomment %}
+                                <li class="select-option"><a href="{{ item.get_add_to_cart_url }}">Add to Cart</a></li>
+                                <li class="wishlist"><a href="{{ item.get_absolute_url }}"><i class="far fa-heart"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="product-content">
+                        <div class="inner">
+                            <h5 class="title"><a href="{{ item.get_absolute_url }}">{{item.name}}</a></h5>
+                            <div class="product-price-variant">
+                                <span class="price current-price">₦{{item.price}}</span>
+                                {% if item.discount_price %}
+                                <span class="price old-price">₦{{item|getDiscountPrice}}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Single Product  -->
+            {% empty %}
+            <table class="table axil-product-table axil-cart-table mb--40">
+                <tbody>
+                    <tr>
+                        <td colspan='2'>No result for what you searched</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% endfor %}
+            
+        </div>
+        <div class="text-center pt--30">
+            {% if is_paginated %}
+            <nav class="d-flex justify-content-center wow fadeIn">
+              <ul class="pagination pg-blue">
+      
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                </li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range%}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                  <a disabled class="page-link" href="?page={{num}}{% if query %}&prod-search={{query}}{% endif %}">{{num}}
+                    <span class="sr-only">(current)</span>
+                  </a>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item active">
+                    <a class="page-link" href="?page={{num}}{% if query %}&prod-search={{query}}{% endif %}">{{num}}
+                      
+                    </a>
+                  </li>
+                {% endif %}
+                {% endfor %}
+      
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
+            {% endif %}
+            {% comment %} <a href="#" class="axil-btn btn-bg-lighter btn-load-more">Load more</a> {% endcomment %}
+        </div>
+    </div>
+    <!-- End .container -->
+</div>
+<!-- End Shop Area  -->

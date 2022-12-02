@@ -1,0 +1,59 @@
+{% load static %}
+{% load cart_template_tags %}
+<!-- Start Best Sellers Product Area  -->
+<div
+  class="axil-best-seller-product-area bg-color-white axil-section-gap pb--50 pb_sm--30"
+>
+  <div class="container">
+    <div class="section-title-wrapper">
+      <span class="title-highlighter highlighter-secondary"
+        ><i class="far fa-shopping-basket"></i>This Month</span
+      >
+      <h2 class="title">Best Sellers</h2>
+    </div>
+    <div
+      class="new-arrivals-product-activation-2 product-transparent-layout slick-layout-wrapper--15 axil-slick-arrow arrow-top-slide product-slide-mobile"
+    >
+      {% for item in bestseller %}
+      <div class="slick-single-layout">
+        <div class="axil-product product-style-seven">
+          <div class="product-content">
+            <div class="cart-btn">
+              <a href="cart.html">
+                <i class="flaticon-shopping-cart"></i>
+              </a>
+            </div>
+            <div class="inner">
+              <h5 class="title">
+                <a href="{{ item.get_absolute_url }}">{{item.name}}</a>
+              </h5>
+              <div class="product-price-variant">
+                <span class="price current-price">₦{{item.price}}</span>
+                {% if item.discount_price %}
+                <span class="price old-price">₦{{item|getDiscountPrice}}</span>
+                {% endif %}
+              </div>
+              <div class="product-rating">
+               
+              </div>
+            </div>
+          </div>
+          <div class="thumbnail">
+            <a href="{{ item.get_absolute_url }}">
+              <img
+                data-sal="zoom-out"
+                data-sal-delay="100"
+                data-sal-duration="800"
+                loading="lazy"
+                src="{{item.image.url}}"
+                alt="Product Images"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<!-- End  Best Sellers Product Area  -->

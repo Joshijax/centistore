@@ -1,0 +1,187 @@
+{% load static %}
+
+
+        <!-- Start Cart Area  -->
+        <div class="axil-product-cart-area axil-section-gap">
+            <div class="container">
+                <div class="axil-product-cart-wrap">
+                    <div class="product-table-heading">
+                        <h4 class="title">Your Cart</h4>
+                        <a href="#" class="cart-clear">Clear Shoping Cart</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table axil-product-table axil-cart-table mb--40">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="product-remove"></th>
+                                    <th scope="col" class="product-thumbnail">Product</th>
+                                    <th scope="col" class="product-title"></th>
+                                    <th scope="col" class="product-price">Price</th>
+                                    <th scope="col" class="product-quantity">Quantity</th>
+                                    <th scope="col" class="product-subtotal">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order_item in object.items.all %}
+                                <tr>
+                                    <td class="product-remove"><a href="{% url 'core:remove-from-cart' order_item.item.slug %}" class="remove-wishlist"><i class="fal fa-times"></i></a></td>
+                                    <td class="product-thumbnail"><a href="single-product.html"><img src="{{ order_item.item.image.url }}" alt="Digital Product"></a></td>
+                                    <td class="product-title"><a href="single-product.html">{{ order_item.item.name }}</a></td>
+                                    <td class="product-price" data-title="Price"><span class="currency-symbol">₦</span>{{ order_item.item.price }}</td>
+                                    <td class="product-quantity" data-title="Qty">
+                                        <div class="pro-qty">
+                                            
+                                            <input type="number" class="quantity-input" value="{{ order_item.quantity }}" data-slug="{{ order_item.item.slug}}">
+                                            
+                                        </div>
+                                    </td>
+                                    {% if order_item.item.stock < order_item.quantity %}
+                                    <td class="product-subtotal" data-title="Subtotal"><span class="currency-symbol"></span>Out Of stock</td>
+                                    {% else %}
+                                    <td class="product-subtotal" data-title="Subtotal"><span class="currency-symbol">₦</span>{{ order_item.get_total_item_price }}</td>
+                                    {% endif %}
+                                </tr>
+                                
+                                {% empty %}
+                                <tr>
+                                    <td colspan='5'>Your cart is empty</td>
+                                </tr>
+                                {% endfor %}
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cart-update-btn-area">
+                        <form class="card p-2" action="{% url 'core:add-coupon' %}" method="POST">
+                            {% csrf_token %}
+                        <div class="input-group product-cupon">
+                            
+                            {{ couponform.code }}
+                            <div class="product-cupon-btn">
+                                <button type="submit" class="axil-btn btn-outline">Apply</button>
+                            </div>
+                       
+                        </div>
+                    </form>
+                        <div class="update-btn">
+                            <a href="#" class="axil-btn btn-outline">Update Cart</a>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-xl-5 col-lg-7 offset-xl-7 offset-lg-5">
+                            <div class="axil-order-summery mt--80">
+                                <h5 class="title mb--20">Order Summary</h5>
+                                <div class="summery-table-wrap">
+                                    <table class="table summery-table mb--30">
+                                        <tbody>
+                                            <tr class="order-subtotal">
+                                                <td>Subtotal</td>
+                                                <td>₦{{ object.get_total_without }}</td>
+                                            </tr>
+                                            {% comment %} <tr class="order-shipping">
+                                                <td>Shipping</td>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <input type="radio" id="radio1" name="shipping" checked>
+                                                        <label for="radio1">Free Shippping</label>
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <input type="radio" id="radio2" name="shipping">
+                                                        <label for="radio2">Local: $35.00</label>
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <input type="radio" id="radio3" name="shipping">
+                                                        <label for="radio3">Flat rate: $12.00</label>
+                                                    </div>
+                                                </td>
+                                            </tr> {% endcomment %}
+                                            {% if object.coupon %}
+                                            <tr class="order-tax">
+                                                <td ><b>Coupon</b></td>
+                                                <td><b>-₦{{ object.coupon.amount }}</b></td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if object.get_total %}
+                                            <tr class="order-total">
+                                                <td>Total</td>
+                                                <td class="order-total-amount">₦{{ object.get_total }}</td>
+                                            </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% if object.get_total %}
+                                <a href="/checkout/" class="axil-btn btn-bg-primary checkout-btn">Process to Checkout</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <!-- End Cart Area  -->
+         <!-- jQuery JS -->
+      <script src="{% static 'assets/js/vendor/jquery.js' %}"></script>
+        <script>
+            
+                $('.pro-qty').prepend('<span class="dec qtybtn">-</span>');
+                $('.pro-qty').append('<span class="inc qtybtn">+</span>');
+                $('.qtybtn').on('click', function() {
+                    var $button = $(this);
+                    var oldValue = $button.parent().find('input').val();
+                    var slug = $button.parent().find('input').attr("data-slug");
+                    var prodPrice = $button.parent().parent().parent().find('.product-price').text().substring(1);
+
+                    console.log(slug, prodPrice)
+                    if ($button.hasClass('inc')) {
+                        var newVal = parseFloat(oldValue) + 1;
+                        var newSub = prodPrice * newVal
+                        
+                        $.ajax({
+                            url: location.protocol+"//"+location.host+"/add-to-cart/"+slug,
+                            type: "get",
+                            success: function () {
+                                $button.parent().find('input').val(newVal);
+                                $button.parent().parent().parent().find('.product-subtotal').text("₦"+newSub)
+                                location.reload()
+                              },
+                            error: function () {
+                                return
+                              }
+                        });
+                    } else {
+                        // Don't allow decrementing below zero
+                        if (oldValue > 0) {
+                            var newVal = parseFloat(oldValue) - 1;
+                            var newSub = prodPrice * newVal
+                            
+                            $.ajax({
+                                url: location.protocol+"//"+location.host+"/remove-item-from-cart/"+slug,
+                                type: "get",
+                                success: function () {
+                                    if(newVal > 0){
+                                       
+                                        $button.parent().find('input').val(newVal);
+                                        $button.parent().parent().parent().find('.product-subtotal').text("₦"+newSub)
+                                        location.reload()
+                                    }else{
+                                        $button.parent().parent().parent().closest("tr").remove()
+                                        location.reload()
+                                    }
+                                    
+                                  },
+                                error: function () {
+                                    return
+                                  }
+                            });
+                        } else {
+                            newVal = 0;
+                        }
+                    }
+                    
+                });
+            
+            
+        </script>

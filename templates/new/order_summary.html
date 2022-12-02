@@ -1,0 +1,14 @@
+{% extends "base2.html" %}
+{% load static %} {% load cart_template_tags %}
+{% block content %}
+
+<main class="main-wrapper">
+
+
+    {% include "new/cart_view.html" %}
+    {% include "new/productview/also_like.html" %}
+
+</main>
+{% include "new/service2.html" %}
+{% include "new/footer.html" %}
+{% endblock content %}

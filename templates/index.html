@@ -1,0 +1,176 @@
+{% extends "base1.html" %}
+{% load static %}
+{% block content %}
+
+
+<main class="main-wrapper">
+
+    {% include "new/slider.html" %}
+
+    {% include "new/service.html" %}
+
+    {% include "new/new_arrivals.html" %}
+
+    {% include "new/bestseller.html" %}
+
+    
+
+  
+
+
+    <!-- Poster Countdown Area  -->
+    <div class="axil-poster-countdown">
+        <div class="container">
+            <div class="poster-countdown-wrap bg-lighter">
+                <div class="row">
+                    <div class="col-xl-5 col-lg-6">
+                        <div class="poster-countdown-content">
+                            <div class="section-title-wrapper">
+                                <span class="title-highlighter highlighter-secondary"> <i class="far fa-shopping-basket"></i> Don’t Miss!!</span>
+                                <h2 class="title">Let's Shopping Today</h2>
+                            </div>
+                            <div class="poster-countdown countdown mb--40"></div>
+                            <a href="#" class="axil-btn btn-bg-primary">Check it Out!</a>
+                        </div>
+                    </div>
+                    <div class="col-xl-7 col-lg-6">
+                        <div class="poster-countdown-thumbnail">
+                            <img src="{% static 'assets/images/product/poster/poster-05.png' %}" alt="Poster Product">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Poster Countdown Area  -->
+
+    {% include "new/product_area.html" %}
+
+    <!-- Start Testimonila Area  -->
+    {% comment %} <div class="axil-testimoial-area axil-section-gap bg-vista-white">
+        <div class="container">
+            <div class="section-title-wrapper">
+                <span class="title-highlighter highlighter-secondary"> <i class="fal fa-quote-left"></i>Testimonials</span>
+                <h2 class="title">Users Feedback</h2>
+            </div>
+            <!-- End .section-title -->
+            <div class="testimonial-slick-activation testimonial-style-one-wrapper slick-layout-wrapper--20 axil-slick-arrow arrow-top-slide">
+                <div class="slick-single-layout testimonial-style-one">
+                    <div class="review-speech">
+                        <p>“ It’s amazing how much easier it has been to
+                            meet new people and create instantly non
+                            connections. I have the exact same personal
+                            the only thing that has changed is my mind
+                            set and a few behaviors. “</p>
+                    </div>
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img src="{% static 'assets/images/testimonial/image-1.png' %}" alt="testimonial image">
+                        </div>
+                        <div class="media-body">
+                            <span class="designation">Head Of Idea</span>
+                            <h6 class="title">James C. Anderson</h6>
+                        </div>
+                    </div>
+                    <!-- End .thumbnail -->
+                </div>
+                <!-- End .slick-single-layout -->
+                <div class="slick-single-layout testimonial-style-one">
+                    <div class="review-speech">
+                        <p>“ It’s amazing how much easier it has been to
+                            meet new people and create instantly non
+                            connections. I have the exact same personal
+                            the only thing that has changed is my mind
+                            set and a few behaviors. “</p>
+                    </div>
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img src="{% static 'assets/images/testimonial/image-2.png' %}" alt="testimonial image">
+                        </div>
+                        <div class="media-body">
+                            <span class="designation">Head Of Idea</span>
+                            <h6 class="title">James C. Anderson</h6>
+                        </div>
+                    </div>
+                    <!-- End .thumbnail -->
+                </div>
+                <!-- End .slick-single-layout -->
+                <div class="slick-single-layout testimonial-style-one">
+                    <div class="review-speech">
+                        <p>“ It’s amazing how much easier it has been to
+                            meet new people and create instantly non
+                            connections. I have the exact same personal
+                            the only thing that has changed is my mind
+                            set and a few behaviors. “</p>
+                    </div>
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img src="{% static 'assets/images/testimonial/image-3.png' %}" alt="testimonial image">
+                        </div>
+                        <div class="media-body">
+                            <span class="designation">Head Of Idea</span>
+                            <h6 class="title">James C. Anderson</h6>
+                        </div>
+                    </div>
+                    <!-- End .thumbnail -->
+                </div>
+                <!-- End .slick-single-layout -->
+                <div class="slick-single-layout testimonial-style-one">
+                    <div class="review-speech">
+                        <p>“ It’s amazing how much easier it has been to
+                            meet new people and create instantly non
+                            connections. I have the exact same personal
+                            the only thing that has changed is my mind
+                            set and a few behaviors. “</p>
+                    </div>
+                    <div class="media">
+                        <div class="thumbnail">
+                            <img src="{% static 'assets/images/testimonial/image-2.png' %}" alt="testimonial image">
+                        </div>
+                        <div class="media-body">
+                            <span class="designation">Head Of Idea</span>
+                            <h6 class="title">James C. Anderson</h6>
+                        </div>
+                    </div>
+                    <!-- End .thumbnail -->
+                </div>
+                <!-- End .slick-single-layout -->
+
+            </div>
+        </div>
+    </div> {% endcomment %}
+    <!-- End Testimonila Area  -->
+
+    {% include "new/new_arrivals2.html" %}
+
+    <!-- Start Axil Newsletter Area  -->
+    {% comment %} <div class="axil-newsletter-area axil-section-gap pt--0">
+        <div class="container">
+            <div class="etrade-newsletter-wrapper bg_image bg_image--12">
+                <div class="newsletter-content">
+                    <span class="title-highlighter highlighter-primary2"><i class="fas fa-envelope-open"></i>Newsletter</span>
+                    <h2 class="title mb--40 mb_sm--30">Get weekly update</h2>
+                    <div class="input-group newsletter-form">
+                        <div class="position-relative newsletter-inner mb--15">
+                            <input placeholder="example@gmail.com" type="text">
+                        </div>
+                        <button type="submit" class="axil-btn mb--15">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End .container -->
+    </div> {% endcomment %}
+    <!-- End Axil Newsletter Area  -->
+
+</main>
+
+{% include "new/service2.html" %}
+
+
+{% include "new/footer.html" %}
+
+
+{% endblock content %}
+
+
