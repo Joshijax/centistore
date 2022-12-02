@@ -10,7 +10,11 @@
         <h6 class="my-0">{{ order_item.quantity }} x {{ order_item.item.name}}</h6>
         <small class="text-muted">{{ order_item.item.description}}</small>
         </div>
+        {% if order_item.item.stock < order_item.quantity %}
+        <span class="text-muted">Out Of stock</span>
+        {% else %}
         <span class="text-muted">₦{{ order_item.get_final_price }}</span>
+        {% endif %}
     </li>
     {% endfor %}
     {% if order.coupon %}

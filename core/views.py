@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse
 import stripe
+from requests.exceptions import ConnectionError
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -21,11 +22,14 @@ from django.contrib.auth import logout
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
 from .models import Category, Products, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, sub_Category
 from python_flutterwave import payment
+from django.db import IntegrityError
 
+from rave_python import Rave
 
+rave = Rave("FLWPUBK_TEST-f56a181128b8edde1c201c84114c75a5-X","FLWSECK_TEST-aa528235ea8465216753394deccb2beb-X", usingEnv=False)
 payment.token = 'FLWSECK_TEST-aa528235ea8465216753394deccb2beb-X'
-
-
+auth_token = "FLWSECK_TEST-aa528235ea8465216753394deccb2beb-X"
+ 
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
@@ -209,11 +213,13 @@ class CheckoutView(View):
                 if payment_option == 'F':
                     order = Order.objects.get(
                         user=self.request.user, ordered=False)
-                    print(order, "hereee")
+                    for item in order.items.all():
+                        if item.item.stock < item.quantity:
+                            item.delete()
                     amount = int(order.get_total())
                     name = self.request.user.first_name + " " + self.request.user.last_name
                     return redirect(str(process_flutter_payment(
-                        name, self.request.user.email, amount, '08183939')))
+                        name, self.request.user.email, amount, phone)))
                 elif payment_option == 'P':
                     return redirect('core:payment', payment_option='paypal')
                 else:
@@ -541,28 +547,47 @@ class PaymentView(View):
 def payment_response(request):
     status = request.GET.get('status', None)
     tx_ref = request.GET.get('tx_ref', None)
+    current_url = request.build_absolute_uri()
+    try:
+        val = rave.Card.verify(tx_ref)
+    except ConnectionError as e:    # This is the correct syntax
+        redirect(str(current_url))
+    
+    print(current_url)
     
     order = Order.objects.get(user=request.user, ordered=False)
+
 
     if status != "successful":
         messages.info(request, "AN error occured, payment not successful!")
         return redirect("/")
+
+    if not val["transactionComplete"]:
+        messages.info(request, f"AN error occured, not verified your transaction ref: {tx_ref}!")
+        return redirect("/")
     print(status)
     print(tx_ref)
 
+    try:
+        # create the payment
+        payment = Payment()
+        payment.trx_ref = tx_ref
+        payment.status=status
+        payment.user = request.user
+        payment.amount = order.get_total()
+        payment.save()
+    except IntegrityError as e: 
+        print(e, 'hereee')
+        if 'UNIQUE constraint' in str(e):
+            messages.info(request, f"Payment for transaction {tx_ref} already exist!")
+            return redirect("/")
+
+
+    # assign the payment to the order
     for item in order.items.all():
         item.item.stock -= item.quantity
         item.item.sold += item.quantity
         item.item.save()
-     # create the payment
-    payment = Payment()
-    payment.trx_ref = tx_ref
-    payment.status=status
-    payment.user = request.user
-    payment.amount = order.get_total()
-    payment.save()
-
-    # assign the payment to the order
 
     order_items = order.items.all()
     order_items.update(ordered=True)
@@ -597,7 +622,7 @@ class HomeView(ListView):
 
         context['thisweek'] = Products.objects.filter().order_by('-id')[:6]
 
-        context['explore'] = Products.objects.filter().order_by('-id')[:8]
+        context['explore'] = Products.objects.filter().order_by('-id')[:20]
         context['explore2'] = Products.objects.filter().order_by('-id')[8:8]
         # context['cate'] = Products.objects.filter().order_by('-id')[8:8]
 
@@ -605,13 +630,13 @@ class HomeView(ListView):
 
 
 def process_flutter_payment(name, email, amount, phone):
-    auth_token = "FLWSECK_TEST-aa528235ea8465216753394deccb2beb-X"
+    
     hed = {'Authorization': 'Bearer ' + auth_token}
     data = {
         "tx_ref": ''+str(math.floor(1000000 + random.random()*9000000)),
         "amount": amount,
         "currency": "NGN",
-        "redirect_url": "https://centiacollection/callback",
+        "redirect_url": "http://127.0.0.1:8000/callback",
         "payment_options": "card",
         "meta": {
             "consumer_id": 23,

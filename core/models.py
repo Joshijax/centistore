@@ -222,7 +222,7 @@ class Address(models.Model):
 
 
 class Payment(models.Model):
-    trx_ref = models.CharField(max_length=50)
+    trx_ref = models.CharField(max_length=50, unique=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.SET_NULL, blank=True, null=True)
     amount = models.FloatField()

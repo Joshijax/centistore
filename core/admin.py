@@ -30,7 +30,7 @@ class OrderAdmin(admin.ModelAdmin):
         'coupon'
     ]
     readonly_fields = ('shipping_address',
-                    'billing_address',)
+                    'billing_address', "items")
     list_filter = ['ordered',
                    'being_delivered',
                    'received',
