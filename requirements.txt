@@ -6,6 +6,7 @@ cffi==1.15.1
 chardet==3.0.4
 colorama==0.4.6
 cryptography==38.0.4
+decouple==0.0.7
 defusedxml==0.6.0
 dill==0.3.6
 Django==4.1.3
