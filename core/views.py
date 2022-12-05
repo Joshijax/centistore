@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import math
 import random
 import string
@@ -8,6 +10,7 @@ from django.db.models import Q
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse
 import stripe
+from django.views.decorators.csrf import csrf_exempt
 from requests.exceptions import ConnectionError
 from django.conf import settings
 from django.contrib import messages
@@ -20,16 +23,29 @@ from django.utils import timezone
 from django.views.generic import ListView, DetailView, View
 from django.contrib.auth import logout
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
-from .models import Category, Products, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, sub_Category
+from .models import Category, Products, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, size, sub_Category
 from python_flutterwave import payment
 from django.db import IntegrityError
 
 from rave_python import Rave
+import environ
 
-rave = Rave("FLWPUBK_TEST-f56a181128b8edde1c201c84114c75a5-X","FLWSECK_TEST-aa528235ea8465216753394deccb2beb-X", usingEnv=False)
-payment.token = 'FLWSECK_TEST-aa528235ea8465216753394deccb2beb-X'
-auth_token = "FLWSECK_TEST-aa528235ea8465216753394deccb2beb-X"
+from dotenv import load_dotenv
+import os
  
+load_dotenv()
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
+
+
+public_key = os.getenv("FLUTTER_TEST_PUBLIC_KEY")
+secret_key = os.getenv("FLUTTER_TEST_SECRET_KEY")
+rave = Rave(public_key, secret_key, usingEnv=False)
+payment.token = secret_key
+auth_token = secret_key
+
+
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
@@ -205,7 +221,6 @@ class CheckoutView(View):
                             self.request, "Please fill in the required billing address fields")
                         return redirect('core:checkout')
 
-                
                 payment_option = form.cleaned_data.get('payment_option')
                 phone = form.cleaned_data.get('phone_number')
                 order.phone_number = phone
@@ -322,7 +337,6 @@ class CheckoutView1(View):
                 #     else:
                 #         messages.info(
                 #             self.request, "Please fill in the required shipping address fields")
-
 
                 use_default_billing = form.cleaned_data.get(
                     'use_default_billing')
@@ -508,7 +522,7 @@ class PaymentView(View):
                 # Too many requests made to the API too quickly
                 messages.warning(self.request, "Rate limit error")
                 return redirect("/")
- 
+
             except stripe.error.InvalidRequestError as e:
                 # Invalid parameters were supplied to Stripe's API
                 print(e)
@@ -552,18 +566,18 @@ def payment_response(request):
         val = rave.Card.verify(tx_ref)
     except ConnectionError as e:    # This is the correct syntax
         redirect(str(current_url))
-    
-    print(current_url)
-    
-    order = Order.objects.get(user=request.user, ordered=False)
 
+    print(current_url)
+
+    order = Order.objects.get(user=request.user, ordered=False)
 
     if status != "successful":
         messages.info(request, "AN error occured, payment not successful!")
         return redirect("/")
 
     if not val["transactionComplete"]:
-        messages.info(request, f"AN error occured, not verified your transaction ref: {tx_ref}!")
+        messages.info(
+            request, f"AN error occured, not verified your transaction ref: {tx_ref}!")
         return redirect("/")
     print(status)
     print(tx_ref)
@@ -572,16 +586,16 @@ def payment_response(request):
         # create the payment
         payment = Payment()
         payment.trx_ref = tx_ref
-        payment.status=status
+        payment.status = status
         payment.user = request.user
         payment.amount = order.get_total()
         payment.save()
-    except IntegrityError as e: 
+    except IntegrityError as e:
         print(e, 'hereee')
         if 'UNIQUE constraint' in str(e):
-            messages.info(request, f"Payment for transaction {tx_ref} already exist!")
+            messages.info(
+                request, f"Payment for transaction {tx_ref} already exist!")
             return redirect("/")
-
 
     # assign the payment to the order
     for item in order.items.all():
@@ -601,7 +615,6 @@ def payment_response(request):
 
     messages.success(request, "Your order was successful!")
     return redirect("/")
-    
 
 
 class HomeView(ListView):
@@ -630,7 +643,7 @@ class HomeView(ListView):
 
 
 def process_flutter_payment(name, email, amount, phone):
-    
+
     hed = {'Authorization': 'Bearer ' + auth_token}
     data = {
         "tx_ref": ''+str(math.floor(1000000 + random.random()*9000000)),
@@ -705,7 +718,6 @@ class ShopView(ListView):
             #     self.request, f"Sorry you did not enter any keyword")
             return Products.objects.filter().order_by('-id')
 
-
     def get_context_data(self, **kwargs):
         """
             Add categories to context data
@@ -725,6 +737,7 @@ class ShopView(ListView):
         # context['cate'] = Products.objects.filter().order_by('-id')[8:8]
 
         return context
+
 
 class SearchView(ListView):
     model = Products
@@ -764,7 +777,6 @@ class SearchView(ListView):
                 self.request, f"Sorry you did not enter any keyword")
             return []
 
-
     def get_context_data(self, **kwargs):
         """
             Add categories to context data
@@ -782,8 +794,6 @@ class SearchView(ListView):
         # context['cate'] = Products.objects.filter().order_by('-id')[8:8]
 
         return context
-
-
 
 
 class OrderSummaryView(LoginRequiredMixin, View):
@@ -838,10 +848,11 @@ class ItemDetailView1(DetailView):
     model = Products
     template_name = "product.html"
 
-
+@csrf_exempt
 @login_required
 def add_to_cart(request, slug):
     item = get_object_or_404(Products, slug=slug)
+
     if item.stock > 0:
         order_item, created = OrderItem.objects.get_or_create(
             item=item,
@@ -871,6 +882,54 @@ def add_to_cart(request, slug):
     else:
         messages.info(request, "This item out of Stock.")
         return redirect("core:order-summary")
+
+
+@csrf_exempt
+@login_required
+def add_first_to_cart(request, slug):
+    item = get_object_or_404(Products, slug=slug)
+    sizes = request.POST['size']
+    print(sizes)
+    val_size = None
+    if sizes != "null":
+        val_size = get_object_or_404(size, name=sizes)
+    print(val_size)
+    current_url = request.META.get('HTTP_REFERER')
+
+    if item.stock > 0:
+        order_item, created = OrderItem.objects.get_or_create(
+            item=item,
+            size=val_size,
+            user=request.user,
+            ordered=False
+        )
+        order_qs = Order.objects.filter(user=request.user, ordered=False)
+        if order_qs.exists():
+            order = order_qs[0]
+            checker = order.items.filter(item__slug=item.slug).exists()
+            if sizes != "null":
+                checker = order.items.filter(item__slug=item.slug, size__name=val_size.name).exists()
+            # check if the order item is in the order
+            if checker:
+                order_item.quantity += 1
+                order_item.save()
+                messages.info(request, "This item quantity was updated.")
+                return redirect("core:order-summary")
+            else:
+                order.items.add(order_item)
+                messages.info(request, "This item was added to your cart.")
+                return redirect("core:order-summary")
+        else:
+            ordered_date = timezone.now()
+            order = Order.objects.create(
+                user=request.user, ordered_date=ordered_date)
+            order.items.add(order_item)
+            messages.info(request, "This item was added to your cart.")
+            return redirect("core:order-summary")
+    else:
+        messages.info(request, "This item out of Stock.")
+        return redirect("core:order-summary")
+
 
 @login_required
 def remove_from_cart(request, slug):
@@ -1000,6 +1059,7 @@ class RequestRefundView(View):
                 messages.info(self.request, "This order does not exist.")
                 return redirect("core:request-refund")
 
+
 class CategoryArticlesListView(ListView):
     model = Products
     paginate_by = 6
@@ -1008,11 +1068,13 @@ class CategoryArticlesListView(ListView):
     template_name = 'new/category_view.html'
 
     def get_queryset(self):
-        category = get_object_or_404(sub_Category, name=self.kwargs.get('slug'))
+        category = get_object_or_404(
+            sub_Category, name=self.kwargs.get('slug'))
         return Products.objects.filter(category=category)
 
     def get_context_data(self, **kwargs):
-        context = super(CategoryArticlesListView, self).get_context_data(**kwargs)
+        context = super(CategoryArticlesListView,
+                        self).get_context_data(**kwargs)
         context['categories'] = sub_Category.objects.all()[:8]
 
         context['bestseller'] = Products.objects.filter().order_by('-sold')
@@ -1022,8 +1084,6 @@ class CategoryArticlesListView(ListView):
         context['explore'] = Products.objects.filter().order_by('-id')[:8]
         context['explore2'] = Products.objects.filter().order_by('-id')[8:8]
         return context
-
-
 
 
 def logout_request(request):

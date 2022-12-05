@@ -18,6 +18,7 @@
                                     <th scope="col" class="product-title"></th>
                                     <th scope="col" class="product-price">Price</th>
                                     <th scope="col" class="product-quantity">Quantity</th>
+                                    <th scope="col" class="product-quantity">Size</th>
                                     <th scope="col" class="product-subtotal">Subtotal</th>
                                 </tr>
                             </thead>
@@ -26,7 +27,7 @@
                                 <tr>
                                     <td class="product-remove"><a href="{% url 'core:remove-from-cart' order_item.item.slug %}" class="remove-wishlist"><i class="fal fa-times"></i></a></td>
                                     <td class="product-thumbnail"><a href="single-product.html"><img src="{{ order_item.item.image.url }}" alt="Digital Product"></a></td>
-                                    <td class="product-title"><a href="single-product.html">{{ order_item.item.name }}</a></td>
+                                    <td class="product-title"><a href="{{ order_item.item.get_absolute_url }}">{{ order_item.item.name }}</a></td>
                                     <td class="product-price" data-title="Price"><span class="currency-symbol">₦</span>{{ order_item.item.price }}</td>
                                     <td class="product-quantity" data-title="Qty">
                                         <div class="pro-qty">
@@ -35,6 +36,11 @@
                                             
                                         </div>
                                     </td>
+                                    {% if order_item.size %}
+                                    <td class="product-price" data-title="Size"><span class="currency-symbol"></span>{{ order_item.size.name }}</td>
+                                    {% else %}
+                                    <td class="product-price" data-title="Size"><span class="currency-symbol"></span>null</td>
+                                    {% endif %}
                                     {% if order_item.item.stock < order_item.quantity %}
                                     <td class="product-subtotal" data-title="Subtotal"><span class="currency-symbol"></span>Out Of stock</td>
                                     {% else %}

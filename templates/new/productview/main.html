@@ -1,141 +1,206 @@
 {% load static %}
 
- <!-- Start Shop Area  -->
- <div class="axil-single-product-area bg-color-white">
-    <div class="single-product-thumb axil-section-gap pb--20 pb_sm--0 bg-vista-white">
-        <div class="container">
-            <div class="row row--25">
-                <div class="col-lg-6 mb--40">
-                    <div class="h-100">
-                        <div class="position-sticky sticky-top">
-                            <div class="row row--10">
-                                <div class="col-12 mb--20">
-                                    <div class="single-product-thumbnail axil-product thumbnail-grid">
-                                        <div class="thumbnail">
-                                            <img class="img-fluid" src="{{ object.image.url }}" alt="Product Images">
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- End .col -->
-                                {% for pic in object.picture.all %}
-                                <div class="col-6 mb--20">
-                                    <div class="single-product-thumbnail axil-product thumbnail-grid">
-                                        <div class="thumbnail">
-                                            <img class="img-fluid" src="{{pic.file.url}}" alt="Product Images">
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                                <!-- End .col -->
-                               
-                               
-                            </div>
-                        </div>
+<!-- Start Shop Area  -->
+<div class="axil-single-product-area bg-color-white">
+  <div
+    class="single-product-thumb axil-section-gap pb--20 pb_sm--0 bg-vista-white"
+  >
+    <div class="container">
+      <div class="row row--25">
+        <div class="col-lg-6 mb--40">
+          <div class="h-100">
+            <div class="position-sticky sticky-top">
+              <div class="row row--10">
+                <div class="col-12 mb--20">
+                  <div
+                    class="single-product-thumbnail axil-product thumbnail-grid"
+                  >
+                    <div class="thumbnail">
+                      <img
+                        class="img-fluid"
+                        src="{{ object.image.url }}"
+                        alt="Product Images"
+                      />
                     </div>
+                  </div>
                 </div>
-                <div class="col-lg-6 mb--40">
-                    <div class="h-100">
-                        <div class="position-sticky sticky-top">
-                            <div class="single-product-content">
-                                <div class="inner">
-                                    <h2 class="product-title">{{object.name}}</h2>
-                                    <span class="price-amount">₦{{object.price}}</span>
-                                    
-                                    <ul class="product-meta">
-                                        {% if object.stock == 0 %}
-                                        <li><i class="fal fa-check"></i>Out of stock</li>
-                                        {% else %}
-                                        <li><i class="fal fa-check"></i>In stock</li>
-                                        {% endif %}
-                                        {% comment %} <li><i class="fal fa-check"></i>Free delivery available</li> {% endcomment %}
-                                    </ul>
-                                    <p class="description">{{object.description}}</p>
-
-                                    <div class="product-variations-wrapper">
-
-                                        <!-- Start Product Variation  -->
-                                        <div class="product-variation">
-                                            <h6 class="title">Colors:</h6>
-                                            <div class="color-variant-wrapper">
-                                                <ul class="color-variant">
-                                                    {% for color in object.colors.all %}
-                                                    <li class="color-extra-01 active"><span style="background: {{color.color}} !important; border-color: {{color.color}} !important;"><span style="background: {{color.color}} !important; border-color: {{color.color}} !important; border-color: {{color.color}} !important;" class="color"></span></span>
-                                                    </li>
-                                                    {% endfor %}
-                                                   
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <!-- End Product Variation  -->
-
-                                        <!-- Start Product Variation  -->
-                                        {% comment %} <div class="product-variation product-size-variation">
-                                            <h6 class="title">Size:</h6>
-                                            <ul class="range-variant">
-                                                <li>xs</li>
-                                                <li>s</li>
-                                                <li>m</li>
-                                                <li>l</li>
-                                                <li>xl</li>
-                                            </ul>
-                                        </div> {% endcomment %}
-                                        <!-- End Product Variation  -->
-
-                                    </div>
-
-                                    <!-- Start Product Action Wrapper  -->
-                                    <div class="product-action-wrapper d-flex-center">
-                                        <!-- Start Quentity Action  -->
-                                        {% comment %} <div class="pro-qty mr--20"><input type="text" value="1"></div> {% endcomment %}
-                                        <!-- End Quentity Action  -->
-
-                                        <!-- Start Product Action  -->
-                                        <ul class="product-action d-flex-center mb--0">
-                                            {% if object.stock == 0 %}
-                                            <li class="add-to-cart"><a disabled href="#" class="axil-btn btn-bg-secondary">Out of stock</a></li>
-                                            {% else %}
-                                            <li class="add-to-cart"><a href="{{ object.get_add_to_cart_url }}" class="axil-btn btn-bg-primary">Add to Cart</a></li>
-                                            {% endif %}
-                                            <li class="wishlist"><a href="{{ object.get_remove_from_cart_url }}" class="axil-btn wishlist-btn"> <i class="fas fa-trash float-right"></i></a></li>
-                                        </ul>
-                                        <!-- End Product Action  -->
-
-                                    </div>
-                                    <!-- End Product Action Wrapper  -->
-
-                                    <div class="product-desc-wrapper pt--80 pt_sm--60">
-                                       
-                                        <ul class="pro-des-features pro-desc-style-two">
-                                            <li class="single-features">
-                                                <div class="icon">
-                                                    <img src="{% static 'assets/images/product/product-thumb/icon-3.png' %}" alt="icon">
-                                                </div>
-                                                Easy Returns
-                                            </li>
-                                            <li class="single-features">
-                                                <div class="icon">
-                                                    <img src="{% static 'assets/images/product/product-thumb/icon-2.png' %}" alt="icon">
-                                                </div>
-                                                Quality Service
-                                            </li>
-                                            <li class="single-features">
-                                                <div class="icon">
-                                                    <img src="{% static 'assets/images/product/product-thumb/icon-1.png' %}" alt="icon">
-                                                </div>
-                                                Original Product
-                                            </li>
-                                        </ul>
-                                        <!-- End .pro-des-features -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- End .col -->
+                {% for pic in object.picture.all %}
+                <div class="col-6 mb--20">
+                  <div
+                    class="single-product-thumbnail axil-product thumbnail-grid"
+                  >
+                    <div class="thumbnail">
+                      <img
+                        class="img-fluid"
+                        src="{{pic.file.url}}"
+                        alt="Product Images"
+                      />
                     </div>
+                  </div>
                 </div>
+                {% endfor %}
+                <!-- End .col -->
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-    <!-- End .single-product-thumb -->
+        <div class="col-lg-6 mb--40">
+          <div class="h-100">
+            <div class="position-sticky sticky-top">
+              <div class="single-product-content">
+                <div class="inner">
+                  <h2 class="product-title">{{object.name}}</h2>
+                  <span class="price-amount">₦{{object.price}}</span>
 
+                  <ul class="product-meta">
+                    {% if object.stock == 0 %}
+                    <li><i class="fal fa-check"></i>Out of stock</li>
+                    {% else %}
+                    <li><i class="fal fa-check"></i>In stock</li>
+                    {% endif %} {% comment %}
+                    <li><i class="fal fa-check"></i>Free delivery available</li>
+                    {% endcomment %}
+                  </ul>
+                  <p class="description">{{object.description}}</p>
+
+                  <div class="product-variations-wrapper">
+                    <!-- Start Product Variation  -->
+                    <div class="product-variation">
+                      <h6 class="title">Colors:</h6>
+                      <div class="color-variant-wrapper">
+                        <ul class="color-variant">
+                          {% for color in object.colors.all %}
+                          <li class="color-extra-01 active">
+                            <span
+                              style="background: {{color.color}} !important; border-color: {{color.color}} !important;"
+                              ><span
+                                style="background: {{color.color}} !important; border-color: {{color.color}} !important; border-color: {{color.color}} !important;"
+                                class="color"
+                              ></span
+                            ></span>
+                          </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    </div>
+                    <!-- End Product Variation  -->
+
+                    <!-- Start Product Variation  -->
+                    <form method="POST" action="{{ object.get_first_add_to_cart_url }}">
+                    {% if object.size.all|length %}
+                    <div class="product-variation product-size-variation">
+                      <h6 class="title">Size:</h6>
+                      <select required name="size" class="range-variant" id="range-variant1">
+                        <option value="" selected disabled hidden>
+                          Select sizes
+                        </option>
+                        {% for size in object.size.all %}
+                        <option name="sizess" value="{{size.name}}">{{size.symbol}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    {% else %}
+                    <select hidden required name="size" class="range-variant " id="range-variant1">
+                        <option value="null" selected>
+                          Select sizes
+                        </option>
+                        
+                      </select>
+                    {% endif %}
+
+                    <!-- End Product Variation  -->
+                  </div>
+
+                  <!-- Start Product Action Wrapper  -->
+                  <div class="product-action-wrapper d-flex-center">
+                    <!-- Start Quentity Action  -->
+                    {% comment %}
+                    <div class="pro-qty mr--20">
+                      <input type="text" value="1" />
+                    </div>
+                    {% endcomment %}
+                    <!-- End Quentity Action  -->
+
+                    <!-- Start Product Action  -->
+                    <ul class="product-action d-flex-center mb--0">
+                      {% if object.stock == 0 %}
+                      <li class="add-to-cart">
+                        <a disabled href="#" class="axil-btn btn-bg-secondary"
+                          >Out of stock</a
+                        >
+                      </li>
+                      {% else %}
+                      <li class="add-to-cart">
+                        <button
+                          type="submit"
+                          href="{{ object.get_add_to_cart_url }}"
+                          class="axil-btn btn-bg-primary"
+                        >
+                          Add to Cart
+                        </button>
+                      </li>
+                      {% endif %}
+                      <li class="wishlist">
+                        <a
+                          href="{{ object.get_remove_from_cart_url }}"
+                          class="axil-btn wishlist-btn"
+                        >
+                          <i class="fas fa-trash float-right"></i
+                        ></a>
+                      </li>
+                    </ul>
+                    <!-- End Product Action  -->
+                  </div>
+                </form>
+                  <!-- End Product Action Wrapper  -->
+
+                  <div class="product-desc-wrapper pt--80 pt_sm--60">
+                    <ul class="pro-des-features pro-desc-style-two">
+                      <li class="single-features">
+                        <div class="icon">
+                          <img
+                            src="{% static 'assets/images/product/product-thumb/icon-3.png' %}"
+                            alt="icon"
+                          />
+                        </div>
+                        Easy Returns
+                      </li>
+                      <li class="single-features">
+                        <div class="icon">
+                          <img
+                            src="{% static 'assets/images/product/product-thumb/icon-2.png' %}"
+                            alt="icon"
+                          />
+                        </div>
+                        Quality Service
+                      </li>
+                      <li class="single-features">
+                        <div class="icon">
+                          <img
+                            src="{% static 'assets/images/product/product-thumb/icon-1.png' %}"
+                            alt="icon"
+                          />
+                        </div>
+                        Original Product
+                      </li>
+                    </ul>
+                    <!-- End .pro-des-features -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End .single-product-thumb -->
 </div>
 <!-- End Shop Area  -->
+<script src="{% static 'assets/js/vendor/jquery.js' %}"></script>
+<script>
+  $("#range-variant1").on("change", function () {
+    alert(this.value);
+  });
+</script>

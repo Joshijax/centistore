@@ -71,9 +71,9 @@
         <div class="col-lg-3">
           <div class="slider-product-box">
             <div class="product-thumb">
-              <a href="{{ object_list.0.get_absolute_url }}">
+              <a href="{{object_list.0.get_absolute_url}}">
                 <img
-                  src="{% static 'assets/images/product/product-41.png' %}"
+                  src="{{object_list.0.image.url}}"
                   alt="Product"
                 />
               </a>

@@ -12,6 +12,14 @@ def cart_item_count(user):
             return qs[0].items.count()
     return 0
 
+# @register.filter
+# def cart_item_count(user, item):
+#     if user.is_authenticated:
+#         qs = Order.objects.filter(user=user, ordered=False)
+#         if qs.exists():
+#             return qs[0].items.count()
+#     return 0
+
 
 @register.filter
 def getDiscountPrice(item):

@@ -18,7 +18,8 @@ from .views import (
     CheckoutView1,
     payment_response,
     SearchView,
-    CategoryArticlesListView
+    CategoryArticlesListView,
+    add_first_to_cart
 )
 
 app_name = 'core'
@@ -43,6 +44,7 @@ urlpatterns = [
     path('product/<slug>/', ItemDetailView.as_view(), name='product'),
     path('product1/<slug>/', ItemDetailView1.as_view(), name='product1'),
     path('add-to-cart/<slug>/', add_to_cart, name='add-to-cart'),
+    path('add-first-to-cart/<slug>/', add_first_to_cart, name='add-first-to-cart'),
     path('add-coupon/', AddCouponView.as_view(), name='add-coupon'),
     path('remove-from-cart/<slug>/', remove_from_cart, name='remove-from-cart'),
     path('remove-item-from-cart/<slug>/', remove_single_item_from_cart,

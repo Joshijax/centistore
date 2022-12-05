@@ -39,7 +39,7 @@ class UserProfile(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -60,14 +60,20 @@ class sub_Category(models.Model):
         })
 
 
-
 class colors(models.Model):
     name = models.CharField(max_length=100)
     color = ColorField(default='#FF0000')
 
     def __str__(self):
-        print(colors._meta.get_field('color').verbose_name)
         return self.name
+
+
+class size(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    symbol = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.symbol
 
 
 class Products(models.Model):
@@ -77,8 +83,8 @@ class Products(models.Model):
     # category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
     category = models.ForeignKey(sub_Category,
                                  on_delete=models.CASCADE)
-    colors = models.ManyToManyField(colors)
-
+    colors = models.ManyToManyField(colors, blank=True)
+    size = models.ManyToManyField(size, blank=True)
     description = models.TextField()
     stock = models.IntegerField(default=0)
     sold = models.IntegerField(default=0)
@@ -101,6 +107,11 @@ class Products(models.Model):
 
     def get_add_to_cart_url(self):
         return reverse("core:add-to-cart", kwargs={
+            'slug': self.slug
+        })
+
+    def get_first_add_to_cart_url(self):
+        return reverse("core:add-first-to-cart", kwargs={
             'slug': self.slug
         })
 
@@ -130,6 +141,7 @@ class OrderItem(models.Model):
                              on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
     item = models.ForeignKey(Products, on_delete=models.CASCADE)
+    size = models.ForeignKey(size, blank=True, null=True, on_delete=models.DO_NOTHING)
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
@@ -215,8 +227,8 @@ class Address(models.Model):
     default = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.street_address+" ,"+str(self.country.name)+" , zip code: "+ self.zip
-
+        return self.street_address+" ,"+str(self.country.name)+" , zip code: " + self.zip
+ 
     class Meta:
         verbose_name_plural = 'Addresses'
 
