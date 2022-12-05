@@ -39,8 +39,8 @@ env = environ.Env()
 environ.Env.read_env()
 
 
-public_key = os.getenv("FLUTTER_TEST_PUBLIC_KEY")
-secret_key = os.getenv("FLUTTER_TEST_SECRET_KEY")
+public_key = settings.FLUTTER_TEST_PUBLIC_KEY
+secret_key = settings.FLUTTER_TEST_SECRET_KEY
 rave = Rave(public_key, secret_key, usingEnv=False)
 payment.token = secret_key
 auth_token = secret_key
