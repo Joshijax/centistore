@@ -6,7 +6,7 @@ from phonenumber_field.formfields import PhoneNumberField
 
 PAYMENT_CHOICES = (
     ('F', 'Flutter'),
-    ('P', 'PayStack')
+  
 )
 
 
