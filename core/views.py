@@ -888,11 +888,13 @@ def add_to_cart(request, slug):
 @login_required
 def add_first_to_cart(request, slug):
     item = get_object_or_404(Products, slug=slug)
-    sizes = request.POST['size']
+    sizes = request.POST.get('size', False)
     print(sizes)
     val_size = None
-    if sizes != "null":
+    if sizes:
         val_size = get_object_or_404(size, name=sizes)
+    else:
+        return redirect("core:product", slug=slug)
     print(val_size)
     current_url = request.META.get('HTTP_REFERER')
 

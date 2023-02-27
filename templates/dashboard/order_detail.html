@@ -1,0 +1,229 @@
+{% extends "dashboard/base/base.html" %}
+{% load static %}
+{% block content %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}  
+<!-- Content Wrapper. Contains page content -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .h2 {
+        margin-bottom: 10px;
+    }
+    .ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .li {
+        margin-bottom: 5px;
+        padding: 10px;
+        background-color: #f2f2f2;
+        border-radius: 5px;
+        position: relative;
+    }
+    .no-data {
+        color: #666;
+        font-style: italic;
+    }
+    .delete-button {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f44336;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 14px;
+        text-transform: uppercase;
+        transition: background-color 0.3s ease;
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+    }
+    .delete-button:hover {
+        background-color: #c62828;
+    }
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+    <div class="container-fluid">
+    <div class="row mb-2">
+   
+    {% comment %} <div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:products' %}">Products</a></li>
+    <li class="breadcrumb-item active">Update Products</li>
+    </ol>
+    </div> {% endcomment %}
+    </div>
+    </div><!-- /.container-fluid -->
+    </section>
+    
+    <!-- Main content -->
+    <section class="content">
+    <div class="container-fluid">
+    <div class="row">
+    <!-- left column -->
+    <div class="col-md-12 " >
+    <!-- general form elements -->
+    <div class="card card-default">
+    <div class="card-header">
+    <h3 class="card-title">View utils</h3>
+    </div>
+    <!-- /.card-header -->
+    <!-- form start -->
+
+<!-- list_models.html -->
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Order Details</h1>
+    <div class="card mb-4">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Order Summary</h5>
+      </div>
+      <div class="card-body">
+        <p><strong>Order Number:</strong> {{ order.id }}</p>
+        <p><strong>Order Date:</strong> {{ order.ordered_date }}</p>
+        <p><strong>Status:</strong>     {% if order.status == 'DSO' %}
+            <span class="badge badge-warning">Dispatching soon</span>
+            {% endif %}
+            {% if order.status == 'DL' %}
+            <span class="badge badge-success">Delivered</span>
+            {% endif %}
+            {% if order.status == 'IT' %}
+            <span class="badge badge-success">In transit</span>
+            {% endif %}
+            {% if order.status == 'DS' %}
+            <span class="badge badge-success">Delivered</span>
+            {% endif %}
+            {% if order.status == 'CL' %}
+            <span class="badge badge-error">Cancelled</span>
+            {% endif %}
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Manage Shipping Status
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  
+                  <a href="/dashboard/update-status-in/DSO/{{order.id}}" class="dropdown-item" class="badge badge-warning">Dispatching soon</>
+                 
+                  
+                  <a href="/dashboard/update-status-in/DL/{{order.id}}" class="dropdown-item" class="badge badge-success">Delivered</>
+         
+                
+                  <a href="/dashboard/update-status-in/IT/{{order.id}}" class="dropdown-item" class="badge badge-success">In transit</>
+          
+                  <a href="/dashboard/update-status-in/DS/{{order.id}}" class="dropdown-item" class="badge badge-success">Dispatched</>
+                    <a href="/dashboard/update-status/CL/{{order.id}}" class="dropdown-item" class="badge badge-success">Cancelled<a/>
+             
+                </div>
+              </div>
+        </p>
+        <p><strong>Total Items:</strong> {{ order.get_qty }}</p>
+        <p><strong>Total Price:</strong> ₦{{ order.get_total }}</p>
+        {% if order.coupon %}
+          <p><strong>Coupon:</strong> {{ order.coupon.code }} - ₦{{ order.coupon.amount }}</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Billing Address</h5>
+          </div>
+          <div class="card-body">
+            <p><strong>Name:</strong> {{ order.billing_address.user.get_full_name }}</p>
+            <p><strong>Address:</strong> {{ order.billing_address.street_address }}</p>
+            <p><strong>City:</strong> {{ order.billing_address.country }}</p>
+            {% comment %} <p><strong>State:</strong> {{ order.billing_address.state }}</p> {% endcomment %}
+            <p><strong>Zip code:</strong> {{ order.billing_address.zip }}</p>
+            <p><strong>Phone:</strong> {{ order.phone_number }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Shipping Address</h5>
+          </div>
+          <div class="card-body">
+            <p><strong>Name:</strong> {{ order.shipping_address.full_name }}</p>
+            <p><strong>Address:</strong> {{ order.shipping_address.street_address }}</p>
+            <p><strong>City:</strong> {{ order.shipping_address.city }}</p>
+            <p><strong>State:</strong> {{ order.shipping_address.state }}</p>
+            <p><strong>Zip code:</strong> {{ order.shipping_address.zip_code }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Order Items</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">Product Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in order.items.all %}
+                <tr>
+                  <td>{{ item.item.name }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>₦{{ item.item.price }}</td>
+                  <td>₦{{ item.get_total_item_price }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+        
+    
+    
+   
+    </div>
+    <!-- /.card -->
+    
+    </div>
+    <!--/.col (left) -->
+    <!-- right column -->
+    <div class="col-md-6">
+    
+    </div>
+    <!--/.col (right) -->
+    </div>
+    <!-- /.row -->
+    </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+
+
+
+{% endblock content %}

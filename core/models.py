@@ -27,6 +27,14 @@ ADDRESS_CHOICES = (
     ('S', 'Shipping'),
 )
 
+STATUS_CHOICES = (
+        ('DS', 'Dispatched'),
+        ('IT', 'In transit'),
+        ('DL', 'Delivered'),
+        ('DSO', 'Dispatching soon'),
+        ('CL', 'Cancelled'),
+    )
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
@@ -91,12 +99,13 @@ class Products(models.Model):
 
     slug = models.SlugField(blank=True)
     image = models.ImageField()
+    created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
     def image_tag(self):
-        return mark_safe('<img src="%s" width="100" height="100" />' % (self.image.url))
+        return mark_safe('<img src="%s" width="50" height="50" />' % (self.image.url))
 
     image_tag.short_description = 'Image'
 
@@ -184,6 +193,9 @@ class Order(models.Model):
     received = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=3, default='DSO')
+
+    
 
     '''
     1. Products added to cart
@@ -206,6 +218,13 @@ class Order(models.Model):
 
         if self.coupon:
             total -= self.coupon.amount
+        return total
+    
+    def get_qty(self):
+        total = 0
+        for order_item in self.items.all():
+            total += order_item.quantity
+
         return total
 
     def get_total_without(self):

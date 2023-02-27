@@ -1,0 +1,98 @@
+{% extends "dashboard/base/base.html" %}
+{% load static %}
+{% block content %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}  
+<!-- Content Wrapper. Contains page content -->
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+    <div class="container-fluid">
+    <div class="row mb-2">
+    <div class="col-sm-6">
+    <h1>Add Products</h1>
+    </div>
+    <div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:products' %}">Products</a></li>
+    <li class="breadcrumb-item active">Add Products</li>
+    </ol>
+    </div>
+    </div>
+    </div><!-- /.container-fluid -->
+    </section>
+    
+    <!-- Main content -->
+    <section class="content">
+    <div class="container-fluid">
+    <div class="row">
+    <!-- left column -->
+    <div class="col-md-12 " >
+    <!-- general form elements -->
+    <div class="card card-default">
+    <div class="card-header">
+    <h3 class="card-title">Add Products</h3>
+    </div>
+    <!-- /.card-header -->
+    <!-- form start -->
+    <form method="post" action="{% url 'dashboard:addprod' %}" enctype="multipart/form-data" class="p-3">
+        {% csrf_token %}
+        {% comment %} {% crispy product_form %} {% endcomment %}
+        {{ product_form|crispy }}
+        <h2>add more Image</h2>
+        {{ image_form|crispy }}
+        <button type="submit" name="submit" class="btn btn-primary">Add Product</button>
+    </form>
+    
+    
+   
+    </div>
+    <!-- /.card -->
+    
+    </div>
+    <!--/.col (left) -->
+    <!-- right column -->
+    <div class="col-md-6">
+    
+    </div>
+    <!--/.col (right) -->
+    </div>
+    <!-- /.row -->
+    </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+
+    <script>
+        
+        const addimag1 = document.querySelector('#div_id_file')
+        function useFileReader (fileList) {
+            for (let index = 0; index < fileList.length; index++) {
+                const element = fileList[index];
+                console.log(element)
+            const reader = new FileReader()
+            const img = new Image()
+            reader.addEventListener('load', () => {
+              img.src = reader.result
+            }, false)
+            reader.readAsDataURL(element)
+            img.style.marginRight = '10px'
+            img.style.marginTop = '5px'
+            addimag1.insertBefore(img, null)
+            }
+          }
+    </script>
+
+{% endblock content %}

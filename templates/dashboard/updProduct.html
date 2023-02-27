@@ -1,0 +1,140 @@
+{% extends "dashboard/base/base.html" %}
+{% load static %}
+{% block content %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}  
+<!-- Content Wrapper. Contains page content -->
+<style>
+    .AClass{
+        right:0px;
+        position: absolute;
+    }
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+    <div class="container-fluid">
+    <div class="row mb-2">
+    <div class="col-sm-6">
+    <h1>Add Products</h1>
+    </div>
+    <div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dashboard:products' %}">Products</a></li>
+    <li class="breadcrumb-item active">Update Products</li>
+    </ol>
+    </div>
+    </div>
+    </div><!-- /.container-fluid -->
+    </section>
+    
+    <!-- Main content -->
+    <section class="content">
+    <div class="container-fluid">
+    <div class="row">
+    <!-- left column -->
+    <div class="col-md-12 " >
+    <!-- general form elements -->
+    <div class="card card-default">
+    <div class="card-header">
+    <h3 class="card-title">Update Products</h3>
+    </div>
+    <!-- /.card-header -->
+    <!-- form start -->
+    <form method="post" enctype="multipart/form-data" class="p-3">
+        {% csrf_token %}
+        {% comment %} {% crispy product_form %} {% endcomment %}
+        {{ product_form|crispy }}
+        <h2>more Image</h2>
+        {{ image_form|crispy }}
+        <div style="display: flex; margin-bottom: 10px;">
+        {% for img in product_images.all %}
+        
+            <div style="position:relative; width: fit-content; margin-right: 8px;">
+                <a href="#" data-model="image" data-id="{{ img.id }}"  class="close AClass">
+                   <span>&times;</span>
+                </a>
+                {{img.file_tag}}
+            </div>
+
+        {% endfor %}
+        </div>
+        <div>
+        <button type="submit" name="submit" class="btn btn-primary">update Product</button>
+        </div>
+    </form>
+    
+    <script>
+        var deleteButtons = document.querySelectorAll('.AClass');
+        for (var i = 0; i < deleteButtons.length; i++) {
+            deleteButtons[i].addEventListener('click', function() {
+                var model = this.dataset.model;
+                var id = this.dataset.id;
+                if (confirm('Are you sure you want to delete this ' + model + '?')) {
+                    fetch('/dashboard/delete/' + model + '/' + id + '/', {
+                        method: 'POST'
+                    }).then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            alert('An error occurred while deleting the ' + model + '.');
+                            console.log(error);
+                        });
+                }else{
+                    return
+                }
+            });
+        }
+    </script>
+   
+    </div>
+    <!-- /.card -->
+    
+    </div>
+    <!--/.col (left) -->
+    <!-- right column -->
+    <div class="col-md-6">
+    
+    </div>
+    <!--/.col (right) -->
+    </div>
+    <!-- /.row -->
+    </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+
+    <script>
+        
+        const addimag1 = document.querySelector('#div_id_file')
+        function useFileReader (fileList) {
+            for (let index = 0; index < fileList.length; index++) {
+                const element = fileList[index];
+                console.log(element)
+            const reader = new FileReader()
+            const img = new Image()
+            reader.addEventListener('load', () => {
+              img.src = reader.result
+            }, false)
+            reader.readAsDataURL(element)
+            img.style.marginRight = '10px'
+            img.style.marginTop = '5px'
+            addimag1.insertBefore(img, null)
+            }
+          }
+    </script>
+
+{% endblock content %}

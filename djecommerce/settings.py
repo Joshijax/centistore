@@ -47,8 +47,13 @@ INSTALLED_APPS = [
     'django_countries',
 
     'core',
-    'colorfield'
+    "dashboard",
+    'colorfield',
+    "mathfilters",
+   
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

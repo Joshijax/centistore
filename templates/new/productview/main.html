@@ -96,7 +96,7 @@
                           Select sizes
                         </option>
                         {% for size in object.size.all %}
-                        <option name="sizess" value="{{size.name}}">{{size.symbol}}</option>
+                        <option name="sizess" value="{{size.name}}">{{size.name}}</option>
                         {% endfor %}
                       </select>
                     </div>
@@ -137,7 +137,7 @@
                           href="{{ object.get_add_to_cart_url }}"
                           class="axil-btn btn-bg-primary"
                         >
-                          Add to Cart {% if  %}{% endif %}
+                          Add to Cart 
                         </button>
                       </li>
                       {% endif %}
@@ -201,6 +201,6 @@
 <script src="{% static 'assets/js/vendor/jquery.js' %}"></script>
 <script>
   $("#range-variant1").on("change", function () {
-    alert(this.value);
+    console.log(this.value);
   });
 </script>
