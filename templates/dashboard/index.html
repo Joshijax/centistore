@@ -131,7 +131,7 @@
             </div>
             <!-- /.card-body -->
             <div class="card-footer clearfix">
-              <a href="Orders.html" class="btn btn-sm btn-secondary float-right">View All Orders</a>
+              <a href="{% url 'dashboard:order_list' %}" class="btn btn-sm btn-secondary float-right">View All Orders</a>
             </div>
             <!-- /.card-footer -->
           </div>
@@ -193,7 +193,7 @@
             </div>
             <!-- /.card-body -->
             <div class="card-footer text-center">
-              <a href="products.html" class="uppercase">View All Products</a>
+              <a href="{% url 'dashboard:products' %}" class="uppercase">View All Products</a>
             </div>
             <!-- /.card-footer -->
           </div>
