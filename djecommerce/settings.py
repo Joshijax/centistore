@@ -191,20 +191,22 @@ FLUTTER_TEST_SECRET_KEY="FLWSECK-f004761e0ec3c719afb8280cb877a978-X"
 
 
 
-DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
-SFTP_STORAGE_HOST = 'ftp://isinaturals.com'
-SFTP_STORAGE_ROOT = '/home/u889468821/domains/centiastore.com/public_html'
-SFTP_STORAGE_PARAMS = {
-    'username': 'u889468821.centi',
-    'password': 'Philanig1',
-}
+
+ 
 
 
 
-
-if not DEBUG:
-    MEDIA_URL = 'http://centiastore.com/media/'
-    MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
-    # MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
+# if not DEBUG:
+#     DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+#     STATICFILES_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+#     SFTP_STORAGE_HOST = 'ftp://81.16.28.142'
+#     SFTP_STORAGE_ROOT = '/home/u889468821/domains/centiastore.com/public_html'
+#     SFTP_STORAGE_PARAMS = {
+#         'username': 'u889468821.centiastore.com',
+#         'password': 'Philanig1',
+#     }
+#     MEDIA_URL = 'http://centiastore.com/media/'
+#     MEDIA_ROOT = ''
+#     # MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
 
     
