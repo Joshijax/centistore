@@ -205,6 +205,6 @@ SFTP_STORAGE_PARAMS = {
 if not DEBUG:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
-    MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
+    # MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
 
     
