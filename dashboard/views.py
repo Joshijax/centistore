@@ -113,11 +113,12 @@ class UpdateProductsView(LoginRequiredMixin, AdminRequiredMixin, View):
             if image_form.is_valid():
                 for file in request.FILES.getlist('file'):
                     Images.objects.create(post=product, file=file)
-            
+            messages.success(request, 'Updated product successfully.')
             return redirect('dashboard:updateproduct', slug= self.kwargs.get("slug"))
             
         else:
             # If ProductForm is not valid, pass the form to the template with errors
+            messages.error(request, 'error updating product....')
             context = {'product_form': product_form, 'image_form': image_form}
             return redirect('dashboard:updateproduct', slug= self.kwargs.get("slug"))
 
