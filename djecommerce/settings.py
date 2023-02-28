@@ -23,8 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'jm@grao=k5j(av@a%5f#ar&a*5juffs*cnwt91b(6g94gs*ky2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-ALLOWED_HOSTS = ["*"]
+DEBUG = True
+ALLOWED_HOSTS = ['127.0.0.1', "centiacollection.herokuapp.com", "centiastore.com", "www.centiastore.com"]
 
 
 # Application definition
