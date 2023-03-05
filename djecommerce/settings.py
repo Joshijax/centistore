@@ -189,7 +189,18 @@ FLUTTER_TEST_PUBLIC_KEY="FLWPUBK-c292d0073bee8868df08438b5aaaa1d8-X"
 FLUTTER_TEST_SECRET_KEY="FLWSECK-f004761e0ec3c719afb8280cb877a978-X"
 
 
-
+# if not DEBUG:
+#     DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+#     STATICFILES_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+#     SFTP_STORAGE_HOST = 'ftp://81.16.28.142'
+#     SFTP_STORAGE_ROOT = '/home/u889468821/domains/centiastore.com/public_html'
+#     SFTP_STORAGE_PARAMS = {
+#         'username': 'u889468821.centiastore.com',
+#         'password': 'Philanig1',
+#     }
+#     MEDIA_URL = 'http://centiastore.com/media/'
+#     MEDIA_ROOT = ''
+#     # MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
 
 
  
@@ -209,4 +220,35 @@ FLUTTER_TEST_SECRET_KEY="FLWSECK-f004761e0ec3c719afb8280cb877a978-X"
 #     MEDIA_ROOT = ''
 #     # MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
 
-    
+
+USE_S3 = True
+if USE_S3:
+    AWS_ACCESS_KEY_ID = 'AKIASSUP5B7AHECXQ5OK'
+    AWS_SECRET_ACCESS_KEY = '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'
+    AWS_STORAGE_BUCKET_NAME = 'centistore'
+    # AWS_LOCATION = 'static'
+    AWS_S3_SECURE_URLS = True
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    # STATIC_LOCATION = 'static'
+    # STATICFILES_STORAGE = 'web.storage_backends.StaticStorage'
+
+    # AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+    # STATICFILES_DIRS = [
+    #     os.path.join(BASE_DIR, 'static'),
+    # ]
+
+    # STATIC_ROOT = os.path.join(BASE_DIR, 'http://%s.s3.amazonaws.com//static/'  % AWS_STORAGE_BUCKET_NAME)
+    # STATIC_URL='https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+    # ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+    # STATICFILES_FINDERS = (           'django.contrib.staticfiles.finders.FileSystemFinder',    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # )
+
+    # S3_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+    # PUBLIC_MEDIA_LOCATION = 'media'
+    # MEDIA_URL = f'{S3_URL}/{PUBLIC_MEDIA_LOCATION}/'
+    # MEDIA_ROOT = 'https://%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
+    # DEFAULT_FILE_STORAGE = 'djecommerce.storage_backends.PublicMediaStorage'   
