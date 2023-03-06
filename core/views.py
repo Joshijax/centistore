@@ -661,9 +661,9 @@ def process_flutter_payment(name, email, amount, phone):
             "name": name
         },
         "customizations": {
-            "title": "Supa Electronics Store",
+            "title": "Centistore",
             "description": "Best store in town",
-            "logo": "https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg"
+            "logo": "http://www.centiastore.com/static/assets/images/logo/cent.png"
         }
     }
     url = ' https://api.flutterwave.com/v3/payments'
