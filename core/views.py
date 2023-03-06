@@ -562,6 +562,8 @@ def payment_response(request):
     status = request.GET.get('status', None)
     tx_ref = request.GET.get('tx_ref', None)
     current_url = request.build_absolute_uri()
+    if status == "cancelled":
+        redirect("core:home")
     try:
         val = rave.Card.verify(tx_ref)
     except ConnectionError as e:    # This is the correct syntax
@@ -649,7 +651,7 @@ def process_flutter_payment(name, email, amount, phone):
         "tx_ref": ''+str(math.floor(1000000 + random.random()*9000000)),
         "amount": amount,
         "currency": "NGN",
-        "redirect_url": "https://centiacollection.herokuapp.com/callback",
+        "redirect_url": "https://www.centiastore.com/callback",
         "payment_options": "card",
         "meta": {
             "consumer_id": 23,
