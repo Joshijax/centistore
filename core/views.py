@@ -190,7 +190,7 @@ class CheckoutView(View):
                             item.delete()
                     amount = int(order.get_total())
                     name = form.cleaned_data.get('full_name')
-                    email = email = self.request.user.email if self.request.user.email else (form.cleaned_data.get('email') if form.cleaned_data.get('email')  else '')
+                    email = email = form.cleaned_data.get('email') if self.request.user else (self.request.user.email if form.cleaned_data.get('email')  else 'johndoe@gmail.com')
                     customer.name = name
                     customer.email = email
                     customer.save()
