@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     "dashboard",
     'colorfield',
     "mathfilters",
-    "storages"
+    "storages",
+    'corsheaders',
    
 ]
 
@@ -60,10 +61,20 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'https://www.centiastore.com',
+    'http://www.centiastore.com',
+    'https://centiastore.com',
+    'http://centiastore.com',
+    "http://127.0.0.1:7000",
+    "http://127.0.0.1:8000"
 ]
 
 ROOT_URLCONF = 'djecommerce.urls'
