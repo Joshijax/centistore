@@ -15,6 +15,10 @@ class CheckoutForm(forms.Form):
         'class': 'form-control',
         'placeholder': 'John Doe',
     }))
+    email = forms.EmailField(required=True, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'JohnDoe@gmail.com',
+    }))
     shipping_address = forms.CharField(required=False)
     shipping_address2 = forms.CharField(required=False)
     shipping_country = CountryField(blank_label='(select country)').formfield(

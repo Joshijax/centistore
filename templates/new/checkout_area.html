@@ -147,8 +147,13 @@
             {% endif %}
             
               <div class="md-form mb-5">
-                {{ form.full_name }}
+                <input {% if customer.name %}value="{{customer.name}}"{% endif %} type="text" name="full_name" class="form-control" placeholder="John Doe" required="" id="id_full_name">
                 <label for="full_name" class="">Full Name</label>
+              </div>
+
+              <div class="md-form mb-5">
+                <input {% if customer.name %}value="{{customer.email}}"{% endif %} type="text" name="email" class="form-control" placeholder="JohnDoe@gmail.com" required="" id="id_email">
+                <label for="full_name" class="">Email Address</label>
               </div>
             
             <div id="hideable_billing_id">
