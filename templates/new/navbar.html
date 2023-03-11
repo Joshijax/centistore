@@ -123,13 +123,13 @@
                         </li>
                        
                        
-                        <li class="shopping-cart">
-                            {% comment %} <a href="#" class="cart-dropdown-btn"> {% endcomment %}
+                        {% comment %} <li class="shopping-cart">
+                            
                             <a href="{% url 'core:order-summary' %}" class="cart-dropdown-btn1">
                                 <span class="cart-count">{{ request|cart_item_count }}</span>
                                 <i class="flaticon-shopping-cart"></i>
                             </a>
-                        </li>
+                        </li> {% endcomment %}
                         
                         {% comment %} <li class="my-account">
                             <a href="javascript:void(0)">

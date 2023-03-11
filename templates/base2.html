@@ -91,8 +91,11 @@
 		if (device == null || device == undefined){
 			device = uuidv4()
 		}
+    console.log(window.location)
 
 		document.cookie ='device=' + device + ";domain=;path=/"
+		{% comment %} document.cookie ='device=' + device + ";Secure" {% endcomment %}
+
 
 	</script>
 </head>
