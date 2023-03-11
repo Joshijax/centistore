@@ -5,7 +5,7 @@ from phonenumber_field.widgets import PhoneNumberPrefixWidget, RegionalPhoneNumb
 from phonenumber_field.formfields import PhoneNumberField
 
 PAYMENT_CHOICES = (
-    ('F', 'Flutter'),
+    ('F', 'FlutterWave'),
   
 )
 

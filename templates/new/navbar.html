@@ -122,16 +122,16 @@
                             </a>
                         </li>
                        
-                        {% if request.user.is_authenticated %}
+                       
                         <li class="shopping-cart">
                             {% comment %} <a href="#" class="cart-dropdown-btn"> {% endcomment %}
                             <a href="{% url 'core:order-summary' %}" class="cart-dropdown-btn1">
-                                <span class="cart-count">{{ request.user|cart_item_count }}</span>
+                                <span class="cart-count">{{ request|cart_item_count }}</span>
                                 <i class="flaticon-shopping-cart"></i>
                             </a>
                         </li>
-                        {% endif %}
-                        <li class="my-account">
+                        
+                        {% comment %} <li class="my-account">
                             <a href="javascript:void(0)">
                                 <i class="flaticon-person"></i>
                             </a>
@@ -156,7 +156,7 @@
                                 <div class="reg-footer text-center">No account yet? <a href="{% url 'account_signup' %}" class="btn-link">REGISTER HERE.</a></div>
                                 {% endif %}
                             </div>
-                        </li>
+                        </li> {% endcomment %}
                         <li class="axil-mobile-toggle">
                             <button class="menu-btn mobile-nav-toggler">
                                 <i class="flaticon-menu-2"></i>

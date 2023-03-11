@@ -9,6 +9,7 @@ from django.utils.html import escape
 from colorfield.fields import ColorField
 from django.utils.html import mark_safe
 from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.auth.models import User
 
 CATEGORY_CHOICES = (
     ('S', 'Shirt'),
@@ -34,6 +35,20 @@ STATUS_CHOICES = (
         ('DSO', 'Dispatching soon'),
         ('CL', 'Cancelled'),
     )
+
+
+class Customer(models.Model):
+	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
+	name = models.CharField(max_length=200, null=True, blank=True)
+	email = models.CharField(max_length=200, null=True, blank=True)
+	device = models.CharField(max_length=200, null=True, blank=True)
+
+	def __str__(self):
+		if self.name:
+			name = self.name
+		else:
+			name = self.device
+		return str(name)
 
 
 class UserProfile(models.Model):
@@ -146,8 +161,9 @@ class Images(models.Model):
 
 
 class OrderItem(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL,
+    #                          on_delete=models.CASCADE)
+    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     ordered = models.BooleanField(default=False)
     item = models.ForeignKey(Products, on_delete=models.CASCADE)
     size = models.ForeignKey(size, blank=True, null=True, on_delete=models.DO_NOTHING)
@@ -173,8 +189,9 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL,
+    #                          on_delete=models.CASCADE)
+    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     ref_code = models.CharField(max_length=20, blank=True, null=True)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
@@ -209,7 +226,7 @@ class Order(models.Model):
     '''
 
     def __str__(self):
-        return self.user.username
+        return self.user.device
 
     def get_total(self):
         total = 0
@@ -236,8 +253,9 @@ class Order(models.Model):
 
 
 class Address(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL,
+    #                          on_delete=models.CASCADE)
+    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100)
     country = CountryField(multiple=False)
@@ -254,8 +272,10 @@ class Address(models.Model):
 
 class Payment(models.Model):
     trx_ref = models.CharField(max_length=50, unique=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.SET_NULL, blank=True, null=True)
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL,
+    #                          on_delete=models.SET_NULL, blank=True, null=True)
+    
+    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.FloatField()
     status = models.CharField(max_length=50, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
