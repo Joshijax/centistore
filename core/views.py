@@ -243,7 +243,7 @@ class CheckoutView(View):
                         if item.item.stock < item.quantity:
                             item.delete()
                     amount = int(order.get_total())
-                    name = self.request.user.first_name + " " + self.request.user.last_name
+                    name = form.cleaned_data.get('full_name')
                     return redirect(str(process_flutter_payment(
                         name, self.request.user.email, amount, phone)))
                 elif payment_option == 'P':

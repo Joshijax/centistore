@@ -11,6 +11,10 @@ PAYMENT_CHOICES = (
 
 
 class CheckoutForm(forms.Form):
+    full_name = forms.CharField(required=True, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'John Doe',
+    }))
     shipping_address = forms.CharField(required=False)
     shipping_address2 = forms.CharField(required=False)
     shipping_country = CountryField(blank_label='(select country)').formfield(
