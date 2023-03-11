@@ -26,7 +26,7 @@ from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
 from .models import Category, Customer, Products, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, size, sub_Category
 from python_flutterwave import payment
 from django.db import IntegrityError
-
+from django.views.decorators.csrf import csrf_exempt
 from rave_python import Rave
 import environ
 
@@ -65,6 +65,7 @@ def is_valid_form(values):
     return valid
 
 
+@csrf_exempt
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:
