@@ -123,13 +123,14 @@
                         </li>
                        
                        
-                        {% comment %} <li class="shopping-cart">
-                            
+                        <li class="shopping-cart">
+                            {% if request.COOKIES.device %}
                             <a href="{% url 'core:order-summary' %}" class="cart-dropdown-btn1">
                                 <span class="cart-count">{{ request|cart_item_count }}</span>
                                 <i class="flaticon-shopping-cart"></i>
                             </a>
-                        </li> {% endcomment %}
+                            {% endif %}
+                        </li>
                         
                         {% comment %} <li class="my-account">
                             <a href="javascript:void(0)">

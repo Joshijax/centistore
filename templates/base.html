@@ -10,43 +10,8 @@
     />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>{% block head_title %}{% endblock %}</title>
-    {% block extra_head %} {% endblock %}
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
-    />
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
-    <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet" />
-    <link href="{% static 'css/style.min.css' %}" rel="stylesheet" />
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/images/logo/cent.png' %}">
-    <style type="text/css">
-      html,
-      body,
-      header,
-      .carousel {
-        height: 60vh;
-      }
 
-      @media (max-width: 740px) {
-        html,
-        body,
-        header,
-        .carousel {
-          height: 100vh;
-        }
-      }
-
-      @media (min-width: 800px) and (max-width: 850px) {
-        html,
-        body,
-        header,
-        .carousel {
-          height: 100vh;
-        }
-      }
-    </style>
-
-    <script type="text/javascript">
+    <script defer type="text/javascript">
       function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== "") {
@@ -85,6 +50,43 @@
       document.cookie ='device=' + device + ";domain=;path=/"
 		document.cookie ='device=' + device + ";Secure"
     </script>
+    {% block extra_head %} {% endblock %}
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/style.min.css' %}" rel="stylesheet" />
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/images/logo/cent.png' %}">
+    <style type="text/css">
+      html,
+      body,
+      header,
+      .carousel {
+        height: 60vh;
+      }
+
+      @media (max-width: 740px) {
+        html,
+        body,
+        header,
+        .carousel {
+          height: 100vh;
+        }
+      }
+
+      @media (min-width: 800px) and (max-width: 850px) {
+        html,
+        body,
+        header,
+        .carousel {
+          height: 100vh;
+        }
+      }
+    </style>
+
+  
   </head>
 
   {% include "navbar.html" %}
