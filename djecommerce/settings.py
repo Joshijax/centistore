@@ -97,19 +97,19 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'u889468821_cent',
-#         'USER': 'u889468821_cent',
-#         'PASSWORD': 'Centcent12345',
-#         'HOST': 'sql288.main-hosting.eu',
-#         'PORT': '3306',
-#         'OPTIONS': {
-#             'init_command': "SET sql_mode = 'STRICT_TRANS_TABLES'"
-#         }
-#     }
-# } 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'u889468821_centistore',
+        'USER': 'u889468821_centistore',
+        'PASSWORD': 'Centcent12345',
+        'HOST': 'sql288.main-hosting.eu',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode = 'STRICT_TRANS_TABLES'"
+        }
+    } 
+} 
 
 
 AUTH_PASSWORD_VALIDATORS = [

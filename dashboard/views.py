@@ -147,12 +147,12 @@ class CreateFormsView(LoginRequiredMixin, AdminRequiredMixin,View):
         color_form = ColorForm(request.POST)
         size_form = SizeForm(request.POST)
         coupon_form =CouponForm(request.POST)
-        if category_form.is_valid():
-            category = category_form.save()
+        if subcategory_form.is_valid():
+            category = subcategory_form.save()
             messages.success(request, 'Category created successfully.')
             return redirect('dashboard:utils_dash')
-        elif subcategory_form.is_valid():
-            subcategory = subcategory_form.save()
+        elif category_form.is_valid() :
+            subcategory = category_form.save()
             messages.success(request, 'Subcategory created successfully.')
             return redirect('dashboard:utils_dash')
         elif color_form.is_valid():

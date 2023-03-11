@@ -112,10 +112,10 @@ class Products(models.Model):
     stock = models.IntegerField(default=0)
     sold = models.IntegerField(default=0)
 
-    slug = models.SlugField(blank=True)
+    slug = models.SlugField(blank=True, unique=True)
     image = models.ImageField()
     created_at = models.DateTimeField(auto_now=True)
-
+ 
     def __str__(self):
         return self.name
 

@@ -46,7 +46,7 @@
             <h2>Create Category</h2>
             {{ category_form|crispy }}
         </div>
-        <button type="submit" class="btn btn-primary">Create Category</button>
+        <button type="submit" class="submit-button" class="btn btn-primary">Create Category</button>
     </form>
     <form method="post" class="p-3">
         {% csrf_token %}
@@ -54,7 +54,7 @@
             <h2>Create Subcategory</h2>
             {{ subcategory_form|crispy }}
         </div>
-        <button type="submit" class="btn btn-primary">Create Subcategory</button>
+        <button type="submit" class="submit-button" class="btn btn-primary">Create Subcategory</button>
     </form>
     <form method="post" class="p-3">
         {% csrf_token %}
@@ -62,7 +62,7 @@
             <h2>Create Color</h2>
             {{ color_form|crispy }}
         </div>
-        <button type="submit" class="btn btn-primary">Create Color</button>
+        <button type="submit" class="submit-button" class="btn btn-primary">Create Color</button>
     </form>
     <form method="post" class="p-3">
         {% csrf_token %}
@@ -70,7 +70,7 @@
             <h2>Create Size</h2>
             {{ size_form|crispy }}
         </div>
-        <button type="submit" class="btn btn-primary">Create Size</button>
+        <button data-model="size" type="submit" class="submit-button" class="btn btn-primary">Create Size</button>
     </form>
 
     <form method="post" class="p-3">
@@ -79,7 +79,7 @@
             <h2>Create Coupon</h2>
             {{ coupon_form|crispy }}
         </div>
-        <button type="submit" class="btn btn-primary">Create Coupon</button>
+        <button data-model="coupons" type="submit" class="submit-button" class="btn btn-primary">Create Coupon</button>
     </form>
         
     
@@ -130,5 +130,8 @@
             }
           }
     </script>
+
+
+    
 
 {% endblock content %}
