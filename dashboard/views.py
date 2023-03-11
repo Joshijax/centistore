@@ -26,6 +26,7 @@ class DashboardHomeView(LoginRequiredMixin, AdminRequiredMixin, View):
         self.context_object["all_users"] = User.objects.all().order_by("-id")
         self.context_object["all_order"] = Order.objects.all().order_by("-id")
         self.context_object["all_products"] = Products.objects.all()
+        self.context_object["sales"] = Order.objects.filter(ordered=True).count()
         self.context_object["product_create_form"] = product_create_form
         self.context_object["product_create_form"] = product_create_form
 
