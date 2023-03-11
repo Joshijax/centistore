@@ -685,7 +685,7 @@ class SearchView(ListView):
         return context
 
 
-class OrderSummaryView(LoginRequiredMixin, View):
+class OrderSummaryView(View):
     def get(self, *args, **kwargs):
         try:
             try:
