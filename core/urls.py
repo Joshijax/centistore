@@ -40,7 +40,6 @@ urlpatterns = [
         view=CategoryArticlesListView.as_view(),
         name='category_prod'
     ),
-    path('dashy/', DashboardHomeView.as_view(), name='home'),
     path('search/', SearchView.as_view(), name='search'),
     path('order-summary/', OrderSummaryView.as_view(), name='order-summary'),
     path('order-summary1/', OrderSummaryView2.as_view(), name='order-summary1'),

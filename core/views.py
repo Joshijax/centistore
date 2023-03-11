@@ -395,8 +395,10 @@ def payment_response(request):
     status = request.GET.get('status', None)
     tx_ref = request.GET.get('tx_ref', None)
     current_url = request.build_absolute_uri()
+    
     if status == "cancelled":
-        redirect("core:home")
+        messages.info(request, "AN error occured, payment not successful!")
+        return redirect("core:home")
     try:
         val = rave.Card.verify(tx_ref)
     except ConnectionError as e:    # This is the correct syntax
