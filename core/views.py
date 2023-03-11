@@ -28,6 +28,7 @@ from python_flutterwave import payment
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from rave_python import Rave
+from django.utils.decorators import method_decorator
 import environ
 
 from dotenv import load_dotenv
@@ -65,8 +66,11 @@ def is_valid_form(values):
     return valid
 
 
-@csrf_exempt
+ 
 class CheckoutView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
     def get(self, *args, **kwargs):
         try:
             try:
