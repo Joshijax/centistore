@@ -77,6 +77,16 @@ CORS_ORIGIN_WHITELIST = [
     "http://127.0.0.1:8000"
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'centiastore.com',
+    'https://www.centiastore.com',
+    'http://www.centiastore.com',
+    'https://centiastore.com',
+    'http://centiastore.com',
+    "http://127.0.0.1:7000",
+    "http://127.0.0.1:8000"
+]
+
 ROOT_URLCONF = 'djecommerce.urls'
 
 TEMPLATES = [
