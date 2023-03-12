@@ -24,7 +24,7 @@ SECRET_KEY = 'jm@grao=k5j(av@a%5f#ar&a*5juffs*cnwt91b(6g94gs*ky2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', "centiacollection.herokuapp.com", "centiastore.com", "www.centiastore.com"]
+ALLOWED_HOSTS = ['127.0.0.1', "centiacollection.herokuapp.com", "centiastore.com", "www.centiastore.com", "https://www.centiastore.com/"]
 
 
 # Application definition
