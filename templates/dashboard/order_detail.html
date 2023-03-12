@@ -91,6 +91,9 @@
       <div class="card-body">
         <p><strong>Order Number:</strong> {{ order.id }}</p>
         <p><strong>Order Date:</strong> {{ order.ordered_date }}</p>
+        <p><strong>Payment Status:</strong> {{ order.payment.status }}</p>
+        <p><strong>Amount Paid:</strong> {{ order.payment.amount }}</p>
+        <p><strong>Trx Id:</strong> {{ order.payment.trx_ref }}</p>
         <p><strong>Status:</strong>     {% if order.status == 'DSO' %}
             <span class="badge badge-warning">Dispatching soon</span>
             {% endif %}
@@ -140,7 +143,7 @@
             <h5 class="mb-0">Billing Address</h5>
           </div>
           <div class="card-body">
-            <p><strong>Name:</strong> {{ order.billing_address.user.get_full_name }}</p>
+            <p><strong>Name:</strong> {{ order.billing_address.user.name }}</p>
             <p><strong>Address:</strong> {{ order.billing_address.street_address }}</p>
             <p><strong>City:</strong> {{ order.billing_address.country }}</p>
             {% comment %} <p><strong>State:</strong> {{ order.billing_address.state }}</p> {% endcomment %}
@@ -155,7 +158,7 @@
             <h5 class="mb-0">Shipping Address</h5>
           </div>
           <div class="card-body">
-            <p><strong>Name:</strong> {{ order.shipping_address.full_name }}</p>
+            <p><strong>Name:</strong> {{ order.shipping_address.name }}</p>
             <p><strong>Address:</strong> {{ order.shipping_address.street_address }}</p>
             <p><strong>City:</strong> {{ order.shipping_address.city }}</p>
             <p><strong>State:</strong> {{ order.shipping_address.state }}</p>
@@ -174,6 +177,7 @@
             <thead>
               <tr>
                 <th scope="col">Product Name</th>
+                <th scope="col">Size</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Price</th>
                 <th scope="col">Total</th>
@@ -183,12 +187,19 @@
               {% for item in order.items.all %}
                 <tr>
                   <td>{{ item.item.name }}</td>
+                  <td>{{ item.size.name }}</td>
                   <td>{{ item.quantity }}</td>
                   <td>₦{{ item.item.price }}</td>
                   <td>₦{{ item.get_total_item_price }}</td>
                 </tr>
               {% endfor %}
             </tbody>
+            <tfoot class="bg-secondary">
+              <tr>
+                <td>Sub Total</td>
+                <td>₦{{ order.get_total }}</td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

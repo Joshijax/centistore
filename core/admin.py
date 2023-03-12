@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Products, OrderItem, size, Order, Payment, Coupon, Refund, Address, UserProfile, sub_Category, Category, colors, Images
+from .models import Customer, Products, OrderItem, size, Order, Payment, Coupon, Refund, Address, UserProfile, sub_Category, Category, colors, Images
 
 
 def make_refund_accepted(modeladmin, request, queryset):
@@ -29,8 +29,8 @@ class OrderAdmin(admin.ModelAdmin):
         'payment',
         'coupon'
     ]
-    readonly_fields = ('shipping_address',
-                    'billing_address', "items")
+    # readonly_fields = ('shipping_address',
+    #                 'billing_address', "items")
     list_filter = ['ordered',
                    'being_delivered',
                    'received',
@@ -96,5 +96,6 @@ admin.site.register(Payment)
 admin.site.register(Coupon)
 admin.site.register(size)
 admin.site.register(Refund)
+admin.site.register(Customer)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(UserProfile)

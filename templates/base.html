@@ -48,7 +48,7 @@
       }
 
       document.cookie ='device=' + device + ";domain=;path=/"
-		document.cookie ='device=' + device + ";Secure"
+		{% comment %} document.cookie ='device=' + device + ";Secure" {% endcomment %}
     </script>
     {% block extra_head %} {% endblock %}
     <link

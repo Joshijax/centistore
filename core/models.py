@@ -107,7 +107,7 @@ class Products(models.Model):
     category = models.ForeignKey(sub_Category,
                                  on_delete=models.CASCADE)
     colors = models.ManyToManyField(colors, blank=True)
-    size = models.ManyToManyField(size, blank=True)
+    size = models.ManyToManyField(size, blank=False)
     description = models.TextField()
     stock = models.IntegerField(default=0)
     sold = models.IntegerField(default=0)
@@ -305,6 +305,7 @@ class Refund(models.Model):
 def userprofile_receiver(sender, instance, created, *args, **kwargs):
     if created:
         userprofile = UserProfile.objects.create(user=instance)
+        userprofile = Customer.objects.create()
 
 
 post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)

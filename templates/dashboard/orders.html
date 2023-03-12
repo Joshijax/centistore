@@ -51,7 +51,7 @@
     <tr>
         <td>{{order.id}}</td>
         <td>{{order.payment.trx_ref}}</td>
-        <td>{{order.user.get_full_name}}</td>
+        <td>{{order.user.name}}</td>
         <td>
         {% if order.status == 'DSO' %}
         <span class="badge badge-warning">Dispatching soon</span>

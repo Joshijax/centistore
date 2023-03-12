@@ -21,10 +21,10 @@ class DashboardHomeView(LoginRequiredMixin, AdminRequiredMixin, View):
      template_name = 'dashboard/index.html'
      context_object = {}
      def get(self, request, *args, **kwargs):
-
+ 
         product_create_form = ProductForm()
         self.context_object["all_users"] = User.objects.all().order_by("-id")
-        self.context_object["all_order"] = Order.objects.all().order_by("-id")
+        self.context_object["all_order"] = Order.objects.filter(ordered = True).order_by("-id")
         self.context_object["all_products"] = Products.objects.all()
         self.context_object["sales"] = Order.objects.filter(ordered=True).count()
         self.context_object["product_create_form"] = product_create_form
@@ -111,6 +111,7 @@ class UpdateProductsView(LoginRequiredMixin, AdminRequiredMixin, View):
             if request.FILES.get('image', None) is None:
                 product.image = product.image  # Use previous image if none uploaded
                 product.save()
+            product_form.save() 
             if image_form.is_valid():
                 for file in request.FILES.getlist('file'):
                     Images.objects.create(post=product, file=file)

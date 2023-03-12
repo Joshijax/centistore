@@ -78,7 +78,6 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'centiastore.com',
     'https://www.centiastore.com',
     'http://www.centiastore.com',
     'https://centiastore.com',

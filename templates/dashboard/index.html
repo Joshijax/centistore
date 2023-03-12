@@ -117,7 +117,7 @@
                     {% for order in all_order %}
                     <tr>
                       <td>{{order.id}}</td>
-                      <td>{{order.items|length}}</td>
+                      <td>{{order.items.all|length}}</td>
                       <td>{{order.get_total}}</td>
                       <td>
                         {{order.get_qty}}
