@@ -431,7 +431,7 @@ def payment_response(request):
         payment = Payment()
         payment.trx_ref = tx_ref
         payment.status = status
-        payment.user = request.user
+        payment.user = customer
         payment.amount = order.get_total()
         payment.save()
     except IntegrityError as e:
