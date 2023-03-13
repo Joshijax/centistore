@@ -195,7 +195,7 @@ class CheckoutView(View):
                     customer.email = email
                     customer.save()
                     return redirect(str(process_flutter_payment(
-                        name, email, amount, phone)))
+                        name, email, amount, phone, order)))
                 elif payment_option == 'P':
                     return redirect('core:payment', payment_option='paypal')
                 else:
@@ -390,6 +390,9 @@ class CheckoutView1(View):
 
 
 
+
+
+
 @require_http_methods(['GET', 'POST'])
 def payment_response(request):
     status = request.GET.get('status', None)
@@ -483,7 +486,8 @@ class HomeView(ListView):
         return context
 
 
-def process_flutter_payment(name, email, amount, phone):
+
+def process_flutter_payment(name, email, amount, phone, order):
 
     hed = {'Authorization': 'Bearer ' + auth_token}
     data = {
@@ -505,6 +509,12 @@ def process_flutter_payment(name, email, amount, phone):
             "title": "Centistore",
             "description": "Best store in town",
             "logo": "http://www.centiastore.com/static/assets/images/logo/cent.png"
+        },
+        "order_info": {
+            "order_id": order.id,
+            "items": [
+                {"name": item.item.name, "quantity": item.quantity, "price": item.item.price} for item in order.items.all()
+            ]
         }
     }
     url = ' https://api.flutterwave.com/v3/payments'
@@ -513,6 +523,39 @@ def process_flutter_payment(name, email, amount, phone):
     response = response.json()
     link = response['data']['link']
     return link
+
+
+
+# def process_flutter_payment(name, email, amount, phone):
+
+#     hed = {'Authorization': 'Bearer ' + auth_token}
+#     data = {
+#         "tx_ref": ''+str(math.floor(1000000 + random.random()*9000000)),
+#         "amount": amount,
+#         "currency": "NGN",
+#         "redirect_url": "https://www.centiastore.com/callback",
+#         "payment_options": "card",
+#         "meta": {
+#             "consumer_id": 23,
+#             "consumer_mac": "92a3-912ba-1192a"
+#         },
+#         "customer": {
+#             "email": email,
+#             "phonenumber": phone,
+#             "name": name
+#         },
+#         "customizations": {
+#             "title": "Centistore",
+#             "description": "Best store in town",
+#             "logo": "http://www.centiastore.com/static/assets/images/logo/cent.png"
+#         }
+#     }
+#     url = ' https://api.flutterwave.com/v3/payments'
+#     print(url)
+#     response = requests.post(url, json=data, headers=hed)
+#     response = response.json()
+#     link = response['data']['link']
+#     return link
 
 
 class HomeView2(ListView):

@@ -76,7 +76,7 @@
                                 <li>
                                     <a href="{{cate.get_absolute_url}}" class="nav-link">
                                         <span class="menu-icon"></span>
-                                        <span class="menu-text">{{cate.name}} for {{cate.category.name}}</span>
+                                        <span class="menu-text">{{cate}}</span>
                                     </a>
                                    
                                 </li>
@@ -105,7 +105,7 @@
                                 <a href="#">Categories</a>
                                 <ul class="axil-submenu">
                                     {% for cate in categories %}
-                                    <li><a href="blog.html">{{cate.name}}</a></li>
+                                    <li><a href="{{cate.get_absolute_url}}">{{cate}}</a></li>
                                     {% endfor %}
                                 </ul>
                             </li>
