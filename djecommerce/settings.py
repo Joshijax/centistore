@@ -24,7 +24,8 @@ SECRET_KEY = 'jm@grao=k5j(av@a%5f#ar&a*5juffs*cnwt91b(6g94gs*ky2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', "centiacollection.herokuapp.com", "centiastore.com", "www.centiastore.com", "https://www.centiastore.com/"]
+ALLOWED_HOSTS = ['127.0.0.1', "centiacollection.herokuapp.com",
+                 "centiastore.com", "www.centiastore.com", "https://www.centiastore.com/"]
 
 
 # Application definition
@@ -51,7 +52,7 @@ INSTALLED_APPS = [
     "mathfilters",
     "storages",
     'corsheaders',
-   
+
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -61,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-     'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -117,19 +118,19 @@ DATABASES = {
     }
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'u889468821_centistore',
-        'USER': 'u889468821_centistore',
-        'PASSWORD': 'Centcent12345',
-        'HOST': 'sql288.main-hosting.eu',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode = 'STRICT_TRANS_TABLES'"
-        }
-    } 
-} 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'u889468821_centistore',
+#         'USER': 'u889468821_centistore',
+#         'PASSWORD': 'Centcent12345',
+#         'HOST': 'sql288.main-hosting.eu',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode = 'STRICT_TRANS_TABLES'"
+#         }
+#     }
+# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -203,12 +204,12 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-FLUTTER_LIVE_PUBLIC_KEY="FLWPUBK-c292d0073bee8868df08438b5aaaa1d8-X"
-FLUTTER_LIVE_SECRET_KEY="FLWSECK-f004761e0ec3c719afb8280cb877a978-X"
+FLUTTER_LIVE_PUBLIC_KEY = "FLWPUBK-c292d0073bee8868df08438b5aaaa1d8-X"
+FLUTTER_LIVE_SECRET_KEY = "FLWSECK-f004761e0ec3c719afb8280cb877a978-X"
 
 
-FLUTTER_TEST_PUBLIC_KEY="FLWPUBK_TEST-4710e2e530666ce562449e85a94c6963-X"
-FLUTTER_TEST_SECRET_KEY="FLWSECK_TEST-4890474339f09c345ed0492a590c4428-X"
+FLUTTER_TEST_PUBLIC_KEY = "FLWPUBK_TEST-4710e2e530666ce562449e85a94c6963-X"
+FLUTTER_TEST_SECRET_KEY = "FLWSECK_TEST-4890474339f09c345ed0492a590c4428-X"
 
 
 # if not DEBUG:
@@ -223,10 +224,6 @@ FLUTTER_TEST_SECRET_KEY="FLWSECK_TEST-4890474339f09c345ed0492a590c4428-X"
 #     MEDIA_URL = 'http://centiastore.com/media/'
 #     MEDIA_ROOT = ''
 #     # MEDIA_ROOT = os.path.join(SFTP_STORAGE_ROOT, 'media')
-
-
- 
-
 
 
 # if not DEBUG:
@@ -273,4 +270,4 @@ if USE_S3:
     # PUBLIC_MEDIA_LOCATION = 'media'
     # MEDIA_URL = f'{S3_URL}/{PUBLIC_MEDIA_LOCATION}/'
     # MEDIA_ROOT = 'https://%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
-    # DEFAULT_FILE_STORAGE = 'djecommerce.storage_backends.PublicMediaStorage'   
+    # DEFAULT_FILE_STORAGE = 'djecommerce.storage_backends.PublicMediaStorage'
