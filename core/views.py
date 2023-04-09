@@ -33,15 +33,15 @@ import environ
 
 from dotenv import load_dotenv
 import os
- 
+
 load_dotenv()
 # Initialise environment variables
 env = environ.Env()
 environ.Env.read_env()
 
 
-public_key = settings.FLUTTER_TEST_PUBLIC_KEY
-secret_key = settings.FLUTTER_TEST_SECRET_KEY
+public_key = settings.FLUTTER_LIVE_PUBLIC_KEY
+secret_key = settings.FLUTTER_LIVE_SECRET_KEY
 rave = Rave(public_key, secret_key, usingEnv=False)
 payment.token = secret_key
 auth_token = secret_key
@@ -66,19 +66,20 @@ def is_valid_form(values):
     return valid
 
 
- 
 class CheckoutView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
     def get(self, *args, **kwargs):
         try:
             try:
-                customer = self.request.user.customer	
+                customer = self.request.user.customer
             except:
                 device = self.request.COOKIES['device']
-                customer, created = Customer.objects.get_or_create(device=device)
-            
+                customer, created = Customer.objects.get_or_create(
+                    device=device)
+
             order = Order.objects.get(user=customer, ordered=False)
             form = CheckoutForm()
             context = {
@@ -116,17 +117,16 @@ class CheckoutView(View):
         form = CheckoutForm(self.request.POST or None)
         try:
             try:
-                customer = self.request.user.customer	
+                customer = self.request.user.customer
             except:
                 device = self.request.COOKIES['device']
-                customer, created = Customer.objects.get_or_create(device=device)
+                customer, created = Customer.objects.get_or_create(
+                    device=device)
             order = Order.objects.get(user=customer, ordered=False)
             if form.is_valid():
 
-                
                 use_default_billing = form.cleaned_data.get(
                     'use_default_billing')
-            
 
                 if use_default_billing:
                     print("Using the defualt billing address")
@@ -190,7 +190,8 @@ class CheckoutView(View):
                             item.delete()
                     amount = int(order.get_total())
                     name = form.cleaned_data.get('full_name')
-                    email = email = form.cleaned_data.get('email') if self.request.user else (self.request.user.email if form.cleaned_data.get('email')  else 'johndoe@gmail.com')
+                    email = email = form.cleaned_data.get('email') if self.request.user else (
+                        self.request.user.email if form.cleaned_data.get('email') else 'johndoe@gmail.com')
                     customer.name = name
                     customer.email = email
                     customer.save()
@@ -212,10 +213,11 @@ class CheckoutView1(View):
     def get(self, *args, **kwargs):
         try:
             try:
-                customer = self.request.user.customer	
+                customer = self.request.user.customer
             except:
                 device = self.request.COOKIES['device']
-                customer, created = Customer.objects.get_or_create(device=device)
+                customer, created = Customer.objects.get_or_create(
+                    device=device)
             order = Order.objects.get(user=customer, ordered=False)
             form = CheckoutForm()
             context = {
@@ -251,10 +253,11 @@ class CheckoutView1(View):
         form = CheckoutForm(self.request.POST or None)
         try:
             try:
-                customer = self.request.user.customer	
+                customer = self.request.user.customer
             except:
                 device = self.request.COOKIES['device']
-                customer, created = Customer.objects.get_or_create(device=device)
+                customer, created = Customer.objects.get_or_create(
+                    device=device)
             order = Order.objects.get(user=customer, ordered=False)
             if form.is_valid():
 
@@ -389,16 +392,12 @@ class CheckoutView1(View):
             return redirect("core:order-summary")
 
 
-
-
-
-
 @require_http_methods(['GET', 'POST'])
 def payment_response(request):
     status = request.GET.get('status', None)
     tx_ref = request.GET.get('tx_ref', None)
     current_url = request.build_absolute_uri()
-    
+
     if status == "cancelled":
         messages.info(request, "AN error occured, payment not successful!")
         return redirect("core:home")
@@ -409,7 +408,7 @@ def payment_response(request):
 
     print(current_url)
     try:
-        customer = request.user.customer	
+        customer = request.user.customer
     except:
         device = request.COOKIES['device']
         customer, created = Customer.objects.get_or_create(device=device)
@@ -486,7 +485,6 @@ class HomeView(ListView):
         return context
 
 
-
 def process_flutter_payment(name, email, amount, phone, order):
 
     hed = {'Authorization': 'Bearer ' + auth_token}
@@ -523,7 +521,6 @@ def process_flutter_payment(name, email, amount, phone, order):
     response = response.json()
     link = response['data']['link']
     return link
-
 
 
 # def process_flutter_payment(name, email, amount, phone):
@@ -684,10 +681,11 @@ class OrderSummaryView(View):
     def get(self, *args, **kwargs):
         try:
             try:
-                customer = self.request.user.customer	
+                customer = self.request.user.customer
             except:
                 device = self.request.COOKIES['device']
-                customer, created = Customer.objects.get_or_create(device=device)
+                customer, created = Customer.objects.get_or_create(
+                    device=device)
             order = Order.objects.get(user=customer, ordered=False)
             context = {
                 'object': order,
@@ -703,10 +701,11 @@ class OrderSummaryView2(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
             try:
-                customer = self.request.user.customer	
+                customer = self.request.user.customer
             except:
                 device = self.request.COOKIES['device']
-                customer, created = Customer.objects.get_or_create(device=device)
+                customer, created = Customer.objects.get_or_create(
+                    device=device)
             order = Order.objects.get(user=customer, ordered=False)
             context = {
                 'object': order,
@@ -742,23 +741,24 @@ class ItemDetailView1(DetailView):
     model = Products
     template_name = "product.html"
 
+
 @csrf_exempt
 def add_to_cart(request, slug):
     item = get_object_or_404(Products, slug=slug)
 
     if item.stock > 0:
         try:
-            customer = request.user.customer	
+            customer = request.user.customer
         except:
             device = request.COOKIES['device']
             customer, created = Customer.objects.get_or_create(device=device)
-        
+
         order_item, created = OrderItem.objects.get_or_create(
             item=item,
             user=customer,
             ordered=False
         )
-        
+
         order_qs = Order.objects.filter(user=customer, ordered=False)
         if order_qs.exists():
             order = order_qs[0]
@@ -797,38 +797,38 @@ def add_first_to_cart(request, slug):
         return redirect("core:product", slug=slug)
     print(val_size)
     try:
-        customer = request.user.customer	
+        customer = request.user.customer
     except:
         device = request.COOKIES['device']
         customer, created = Customer.objects.get_or_create(device=device)
-    
+
     current_url = request.META.get('HTTP_REFERER')
 
     orderI = OrderItem.objects.filter(
-            item=item,
-            user=customer,
-            ordered=False
-        )
-    ordered_stock= 0
+        item=item,
+        user=customer,
+        ordered=False
+    )
+    ordered_stock = 0
     for ord in orderI:
         ordered_stock += ord.quantity
 
     if item.stock - ordered_stock > 0:
-       
+
         order_item, created = OrderItem.objects.get_or_create(
             item=item,
             size=val_size,
             user=customer,
             ordered=False
         )
-        
-        
+
         order_qs = Order.objects.filter(user=customer, ordered=False)
         if order_qs.exists():
             order = order_qs[0]
             checker = order.items.filter(item__slug=item.slug).exists()
             if sizes != "null":
-                checker = order.items.filter(item__slug=item.slug, size__name=val_size.name).exists()
+                checker = order.items.filter(
+                    item__slug=item.slug, size__name=val_size.name).exists()
             # check if the order item is in the order
             if checker:
                 order_item.quantity += 1
@@ -854,7 +854,7 @@ def add_first_to_cart(request, slug):
 def remove_from_cart(request, slug):
     item = get_object_or_404(Products, slug=slug)
     try:
-        customer = request.user.customer	
+        customer = request.user.customer
     except:
         device = request.COOKIES['device']
         customer, created = Customer.objects.get_or_create(device=device)
@@ -887,7 +887,7 @@ def remove_from_cart(request, slug):
 def remove_single_item_from_cart(request, slug):
     item = get_object_or_404(Products, slug=slug)
     try:
-        customer = request.user.customer	
+        customer = request.user.customer
     except:
         device = request.COOKIES['device']
         customer, created = Customer.objects.get_or_create(device=device)
@@ -939,10 +939,11 @@ class AddCouponView(View):
             print(current_url)
             try:
                 try:
-                    customer = self.request.user.customer	
+                    customer = self.request.user.customer
                 except:
                     device = self.request.COOKIES['device']
-                    customer, created = Customer.objects.get_or_create(device=device)
+                    customer, created = Customer.objects.get_or_create(
+                        device=device)
                 code = form.cleaned_data.get('code')
                 order = Order.objects.get(
                     user=customer, ordered=False)
@@ -975,7 +976,7 @@ class RequestRefundView(View):
             email = form.cleaned_data.get('email')
             # edit the order
             try:
-                
+
                 order = Order.objects.get(ref_code=ref_code)
                 order.refund_requested = True
                 order.save()
