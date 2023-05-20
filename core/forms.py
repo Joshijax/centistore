@@ -6,7 +6,7 @@ from phonenumber_field.formfields import PhoneNumberField
 
 PAYMENT_CHOICES = (
     ('F', 'FlutterWave'),
-  
+
 )
 
 
@@ -26,6 +26,7 @@ class CheckoutForm(forms.Form):
         widget=CountrySelectWidget(attrs={
             'class': 'custom-select d-block w-100',
         }))
+    shipping_country.initial = 'NG'
     shipping_zip = forms.CharField(required=False)
 
     billing_address = forms.CharField(required=False)
@@ -35,6 +36,7 @@ class CheckoutForm(forms.Form):
         widget=CountrySelectWidget(attrs={
             'class': 'custom-select d-block w-100',
         }))
+    billing_country.initial = 'NG'
     billing_zip = forms.CharField(required=False)
 
     same_billing_address = forms.BooleanField(required=False)
@@ -42,7 +44,7 @@ class CheckoutForm(forms.Form):
     use_default_shipping = forms.BooleanField(required=False)
     set_default_billing = forms.BooleanField(required=False)
     use_default_billing = forms.BooleanField(required=False)
-    phone_number =forms.IntegerField(required=True)
+    phone_number = forms.IntegerField(required=True)
 
     payment_option = forms.ChoiceField(
         widget=forms.RadioSelect, choices=PAYMENT_CHOICES)

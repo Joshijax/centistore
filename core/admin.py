@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Customer, Products, OrderItem, size, Order, Payment, Coupon, Refund, Address, UserProfile, sub_Category, Category, colors, Images
+from .models import Customer, Products, OrderItem, Variants, size, Order, Payment, Coupon, Refund, Address, UserProfile, sub_Category, Category, colors, Images
 
 
 def make_refund_accepted(modeladmin, request, queryset):
@@ -43,6 +43,14 @@ class OrderAdmin(admin.ModelAdmin):
     actions = [make_refund_accepted]
 
 
+class variantInline(admin.StackedInline):
+    model = Variants
+    can_delete = False
+    verbose_name_plural = 'Variant_product'
+    fk_name = 'product'
+    # readonly_fields = ('file_tag',)
+
+
 class imagesInline(admin.StackedInline):
     model = Images
     can_delete = False
@@ -67,7 +75,7 @@ class AddressAdmin(admin.ModelAdmin):
 
 class productAdmin(admin.ModelAdmin):
     # fields = ('image_tag', )
-    inlines = [imagesInline, ]
+    inlines = [imagesInline, variantInline]
     search_fields = ['name', 'description']
     list_display = [
         'image_tag',

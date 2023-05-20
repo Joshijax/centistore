@@ -25,22 +25,20 @@
                             <tbody>
                                 {% for order_item in object.items.all %}
                                 <tr>
-                                    <td class="product-remove"><a href="{% url 'core:remove-from-cart' order_item.item.slug %}" class="remove-wishlist"><i class="fal fa-times"></i></a></td>
-                                    <td class="product-thumbnail"><a href="single-product.html"><img src="{{ order_item.item.image.url }}" alt="Digital Product"></a></td>
-                                    <td class="product-title"><a href="{{ order_item.item.get_absolute_url }}">{{ order_item.item.name }}</a></td>
-                                    <td class="product-price" data-title="Price"><span class="currency-symbol">₦</span>{{ order_item.item.price }}</td>
+                                    <td class="product-remove"><a href="{% url 'core:remove-from-cart' order_item.item.id %}" class="remove-wishlist"><i class="fal fa-times"></i></a></td>
+                                    <td class="product-thumbnail"><a href="single-product.html"><img src="{{ order_item.item.product.image.url }}" alt="Digital Product"></a></td>
+                                    <td class="product-title"><a href="{{ order_item.item.get_absolute_url }}">{{ order_item.item.product.name }}</a></td>
+                                    <td class="product-price" data-title="Price"><span class="currency-symbol">₦</span>{{ order_item.item.product.price }}</td>
                                     <td class="product-quantity" data-title="Qty">
                                         <div class="pro-qty">
                                             
-                                            <input type="number" class="quantity-input" value="{{ order_item.quantity }}" data-slug="{{ order_item.item.slug}}">
+                                            <input type="number" class="quantity-input" value="{{ order_item.quantity }}" data-slug="{{ order_item.item.id}}">
                                             
                                         </div>
                                     </td>
-                                    {% if order_item.size %}
-                                    <td class="product-price" data-title="Size"><span class="currency-symbol"></span>{{ order_item.size.name }}</td>
-                                    {% else %}
-                                    <td class="product-price" data-title="Size"><span class="currency-symbol"></span>null</td>
-                                    {% endif %}
+                                  
+                                    <td class="product-price" data-title="Size"><span class="currency-symbol"></span>{{ order_item.item.size.name }}</td>
+                  
                                     {% if order_item.item.stock < order_item.quantity %}
                                     <td class="product-subtotal" data-title="Subtotal"><span class="currency-symbol"></span>Out Of stock</td>
                                     {% else %}

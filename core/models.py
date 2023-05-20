@@ -29,26 +29,27 @@ ADDRESS_CHOICES = (
 )
 
 STATUS_CHOICES = (
-        ('DS', 'Dispatched'),
-        ('IT', 'In transit'),
-        ('DL', 'Delivered'),
-        ('DSO', 'Dispatching soon'),
-        ('CL', 'Cancelled'),
-    )
+    ('DS', 'Dispatched'),
+    ('IT', 'In transit'),
+    ('DL', 'Delivered'),
+    ('DSO', 'Dispatching soon'),
+    ('CL', 'Cancelled'),
+)
 
 
 class Customer(models.Model):
-	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
-	name = models.CharField(max_length=200, null=True, blank=True)
-	email = models.CharField(max_length=200, null=True, blank=True)
-	device = models.CharField(max_length=200, null=True, blank=True)
+    user = models.OneToOneField(
+        User, null=True, blank=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    email = models.CharField(max_length=200, null=True, blank=True)
+    device = models.CharField(max_length=200, null=True, blank=True)
 
-	def __str__(self):
-		if self.name:
-			name = self.name
-		else:
-			name = self.device
-		return str(name)
+    def __str__(self):
+        if self.name:
+            name = self.name
+        else:
+            name = self.device
+        return str(name)
 
 
 class UserProfile(models.Model):
@@ -98,7 +99,7 @@ class size(models.Model):
     def __str__(self):
         return self.symbol
 
- 
+
 class Products(models.Model):
     name = models.CharField(max_length=100)
     price = models.FloatField()
@@ -115,7 +116,7 @@ class Products(models.Model):
     slug = models.SlugField(blank=True, unique=True)
     image = models.ImageField()
     created_at = models.DateTimeField(auto_now=True)
- 
+
     def __str__(self):
         return self.name
 
@@ -160,25 +161,35 @@ class Images(models.Model):
         return mark_safe('<img src="%s" width="150" height="150" />' % (self.file.url))
 
 
+class Variants(models.Model):
+    product = models.ForeignKey(
+        Products, related_name="Variant_product", on_delete=models.CASCADE,)
+    color = models.ForeignKey(
+        colors, related_name="Variant_color", on_delete=models.CASCADE,)
+    size = models.ForeignKey(
+        size, related_name="Variant_size", on_delete=models.CASCADE,)
+
+    stock = models.IntegerField(default=0)
+
+
 class OrderItem(models.Model):
-    # user = models.ForeignKey(settings.AUTH_USER_MODEL,
-    #                          on_delete=models.CASCADE)
-    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(
+        Customer, on_delete=models.SET_NULL, null=True, blank=True)
     ordered = models.BooleanField(default=False)
-    item = models.ForeignKey(Products, on_delete=models.CASCADE)
-    size = models.ForeignKey(size, blank=True, null=True, on_delete=models.DO_NOTHING)
+    item = models.ForeignKey(Variants, on_delete=models.CASCADE)
+
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
-        return f"{self.quantity} of {self.item.name}"
+        return f"{self.quantity} of {self.item.product.name}"
 
     def get_total_item_price(self):
         if self.item.stock < self.quantity:
             return 0
-        return self.quantity * self.item.price
+        return self.quantity * self.item.product.price
 
     def get_total_discount_item_price(self):
-        return self.quantity * self.item.discount_price
+        return self.quantity * self.item.product.discount_price
 
     def get_amount_saved(self):
         return self.get_total_item_price() - self.get_total_discount_item_price()
@@ -191,7 +202,8 @@ class OrderItem(models.Model):
 class Order(models.Model):
     # user = models.ForeignKey(settings.AUTH_USER_MODEL,
     #                          on_delete=models.CASCADE)
-    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(
+        Customer, on_delete=models.SET_NULL, null=True, blank=True)
     ref_code = models.CharField(max_length=20, blank=True, null=True)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
@@ -210,9 +222,8 @@ class Order(models.Model):
     received = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
-    status = models.CharField(choices=STATUS_CHOICES, max_length=3, default='DSO')
-
-    
+    status = models.CharField(choices=STATUS_CHOICES,
+                              max_length=3, default='DSO')
 
     '''
     1. Products added to cart
@@ -236,7 +247,7 @@ class Order(models.Model):
         if self.coupon:
             total -= self.coupon.amount
         return total
-    
+
     def get_qty(self):
         total = 0
         for order_item in self.items.all():
@@ -255,7 +266,8 @@ class Order(models.Model):
 class Address(models.Model):
     # user = models.ForeignKey(settings.AUTH_USER_MODEL,
     #                          on_delete=models.CASCADE)
-    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(
+        Customer, on_delete=models.SET_NULL, null=True, blank=True)
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100)
     country = CountryField(multiple=False)
@@ -264,8 +276,8 @@ class Address(models.Model):
     default = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.street_address+" ,"+str(self.country.name)+" , zip code: " + self.zip
- 
+        return self.street_address + " ," + str(self.country.name) + " , zip code: " + self.zip
+
     class Meta:
         verbose_name_plural = 'Addresses'
 
@@ -274,8 +286,9 @@ class Payment(models.Model):
     trx_ref = models.CharField(max_length=50, unique=True)
     # user = models.ForeignKey(settings.AUTH_USER_MODEL,
     #                          on_delete=models.SET_NULL, blank=True, null=True)
-    
-    user = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+
+    user = models.ForeignKey(
+        Customer, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.FloatField()
     status = models.CharField(max_length=50, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

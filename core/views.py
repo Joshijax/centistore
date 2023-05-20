@@ -23,7 +23,7 @@ from django.utils import timezone
 from django.views.generic import ListView, DetailView, View
 from django.contrib.auth import logout
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
-from .models import Category, Customer, Products, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, size, sub_Category
+from .models import Category, Customer, Products, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variants, size, sub_Category
 from python_flutterwave import payment
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
@@ -186,7 +186,8 @@ class CheckoutView(View):
                     order = Order.objects.get(
                         user=customer, ordered=False)
                     for item in order.items.all():
-                        if item.item.stock < item.quantity:
+                        print(item.quantity, item.item.stock, "here")
+                        if item.quantity > item.item.stock:
                             item.delete()
                     amount = int(order.get_total())
                     name = form.cleaned_data.get('full_name')
@@ -511,7 +512,7 @@ def process_flutter_payment(name, email, amount, phone, order):
         "order_info": {
             "order_id": order.id,
             "items": [
-                {"name": item.item.name, "quantity": item.quantity, "price": item.item.price} for item in order.items.all()
+                {"name": item.item.product.name, "quantity": item.quantity, "price": item.item.product.price} for item in order.items.all()
             ]
         }
     }
@@ -744,7 +745,7 @@ class ItemDetailView1(DetailView):
 
 @csrf_exempt
 def add_to_cart(request, slug):
-    item = get_object_or_404(Products, slug=slug)
+    item = get_object_or_404(Variants, id=slug)
 
     if item.stock > 0:
         try:
@@ -763,7 +764,7 @@ def add_to_cart(request, slug):
         if order_qs.exists():
             order = order_qs[0]
             # check if the order item is in the order
-            if order.items.filter(item__slug=item.slug).exists():
+            if order.items.filter(item=item).exists():
                 order_item.quantity += 1
                 order_item.save()
                 messages.info(request, "This item quantity was updated.")
@@ -788,14 +789,15 @@ def add_to_cart(request, slug):
 @csrf_exempt
 def add_first_to_cart(request, slug):
     item = get_object_or_404(Products, slug=slug)
+    selected_variant_id = request.POST['plan']
     sizes = request.POST.get('size', False)
-    print(sizes)
-    val_size = None
-    if sizes:
-        val_size = get_object_or_404(size, name=sizes)
+    print(sizes, selected_variant_id)
+    variant = None
+    if selected_variant_id:
+        variant = get_object_or_404(Variants, id=selected_variant_id)
     else:
         return redirect("core:product", slug=slug)
-    print(val_size)
+    print(variant)
     try:
         customer = request.user.customer
     except:
@@ -805,30 +807,29 @@ def add_first_to_cart(request, slug):
     current_url = request.META.get('HTTP_REFERER')
 
     orderI = OrderItem.objects.filter(
-        item=item,
+        item=variant,
         user=customer,
         ordered=False
     )
+
+    print(orderI, "orderI")
     ordered_stock = 0
     for ord in orderI:
         ordered_stock += ord.quantity
 
-    if item.stock - ordered_stock > 0:
-
-        order_item, created = OrderItem.objects.get_or_create(
-            item=item,
-            size=val_size,
-            user=customer,
-            ordered=False
-        )
+    if variant.stock - ordered_stock > 0:
 
         order_qs = Order.objects.filter(user=customer, ordered=False)
         if order_qs.exists():
             order = order_qs[0]
-            checker = order.items.filter(item__slug=item.slug).exists()
-            if sizes != "null":
-                checker = order.items.filter(
-                    item__slug=item.slug, size__name=val_size.name).exists()
+            order_item, created = OrderItem.objects.get_or_create(
+                item=variant,
+                user=customer,
+                ordered=False
+            )
+
+            if selected_variant_id != "null":
+                checker = order.items.filter(item=variant).exists()
             # check if the order item is in the order
             if checker:
                 order_item.quantity += 1
@@ -840,6 +841,11 @@ def add_first_to_cart(request, slug):
                 messages.info(request, "This item was added to your cart.")
                 return redirect("core:order-summary")
         else:
+            order_item, created = OrderItem.objects.get_or_create(
+                item=variant,
+                user=customer,
+                ordered=False
+            )
             ordered_date = timezone.now()
             order = Order.objects.create(
                 user=customer, ordered_date=ordered_date)
@@ -852,7 +858,7 @@ def add_first_to_cart(request, slug):
 
 
 def remove_from_cart(request, slug):
-    item = get_object_or_404(Products, slug=slug)
+    item = get_object_or_404(Variants, id=slug)
     try:
         customer = request.user.customer
     except:
@@ -865,7 +871,7 @@ def remove_from_cart(request, slug):
     if order_qs.exists():
         order = order_qs[0]
         # check if the order item is in the order
-        if order.items.filter(item__slug=item.slug).exists():
+        if order.items.filter(item=item).exists():
             order_item = OrderItem.objects.filter(
                 item=item,
                 user=customer,
@@ -877,7 +883,7 @@ def remove_from_cart(request, slug):
             return redirect("core:order-summary")
         else:
             messages.info(request, "This item was not in your cart")
-            return redirect("core:product", slug=slug)
+            return redirect("core:product", slug=item.product.slug)
     else:
         messages.info(request, "You do not have an active order")
         return redirect("core:product", slug=slug)
@@ -885,7 +891,7 @@ def remove_from_cart(request, slug):
 
 @login_required
 def remove_single_item_from_cart(request, slug):
-    item = get_object_or_404(Products, slug=slug)
+    item = get_object_or_404(Variants, id=slug)
     try:
         customer = request.user.customer
     except:
@@ -898,7 +904,7 @@ def remove_single_item_from_cart(request, slug):
     if order_qs.exists():
         order = order_qs[0]
         # check if the order item is in the order
-        if order.items.filter(item__slug=item.slug).exists():
+        if order.items.filter(item=item).exists():
             order_item = OrderItem.objects.filter(
                 item=item,
                 user=customer,

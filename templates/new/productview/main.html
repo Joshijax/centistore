@@ -1,5 +1,156 @@
 {% load static %}
+<style>
 
+  .grid {
+    display: grid;
+    grid-gap: 1em;
+    margin: 0 auto;
+    max-width: 60em;
+    padding: 0;
+    margin-bottom: 40px;
+
+    @media (min-width: 42em) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .card {
+    background-color: #fff;
+    border-radius: 0.5em;
+    position: relative;
+
+    &:hover {
+      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .radio {
+    font-size: inherit;
+    margin: 0;
+    position: absolute;
+    right: calc(1em + 2px);
+    top: calc(1em + 2px);
+  }
+
+  @supports (-webkit-appearance: none) or (-moz-appearance: none) {
+    .radio {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background: #fff;
+      border: 2px solid #e2ebf6;
+      border-radius: 50%;
+      cursor: pointer;
+      height: 1.5em;
+      outline: none;
+      transition: background 0.2s ease-out, border-color 0.2s ease-out;
+      width: 1.5em;
+
+      &::after {
+        border: 2px solid #fff;
+        border-top: 0;
+        border-left: 0;
+        content: "";
+        display: block;
+        height: 0.75rem;
+        left: 25%;
+        position: absolute;
+        top: 50%;
+        transform: rotate(45deg) translate(-50%, -50%);
+        width: 0.375rem;
+      }
+
+      &:checked {
+        background: #558309;
+        border-color: #558309;
+      }
+    }
+
+    .card:hover .radio {
+      border-color: #c4d1e1;
+
+      &:checked {
+        border-color: #558309;
+      }
+    }
+  }
+
+  .plan-details {
+    border: 2px solid #e2ebf6;
+    border-radius: 0.5em;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    transition: border-color 0.2s ease-out;
+  }
+
+  .card:hover .plan-details {
+    border-color: #c4d1e1;
+  }
+
+  .radio:checked ~ .plan-details {
+    border-color: #558309;
+  }
+
+  .radio:focus ~ .plan-details {
+    box-shadow: 0 0 0 2px #c4d1e1;
+  }
+
+  .radio:disabled ~ .plan-details {
+    color: #c4d1e1;
+    cursor: default;
+  }
+
+  .radio:disabled ~ .plan-details .plan-type {
+    color: #c4d1e1;
+  }
+
+  .card:hover .radio:disabled ~ .plan-details {
+    border-color: #e2ebf6;
+    box-shadow: none;
+  }
+
+  .card:hover .radio:disabled {
+    border-color: #e2ebf6;
+  }
+
+  .plan-type {
+    color: #558309;
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1em;
+  }
+
+  .plan-cost {
+    font-size: 2.5rem;
+    font-weight: bold;
+    padding: 0.5rem 0;
+  }
+
+  .slash {
+    font-weight: normal;
+  }
+
+  .plan-cycle {
+    font-size: 2rem;
+    font-variant: none;
+    border-bottom: none;
+    cursor: inherit;
+    text-decoration: none;
+  }
+
+  .hidden-visually {
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+</style>
 <!-- Start Shop Area  -->
 <div class="axil-single-product-area bg-color-white">
   <div
@@ -63,8 +214,59 @@
                     {% endcomment %}
                   </ul>
                   <p class="description">{{object.description}}</p>
+        
 
-                  <div class="product-variations-wrapper">
+                  
+                  <form id="cardForm" method="POST" action="{{ object.get_first_add_to_cart_url }}">
+                  <div class="grid">
+                    {% for variant in object.Variant_product.all %}
+                    <label class="card">
+                      <input {% if variant.stock < 1 %}disabled{% endif %}  name="plan" class="radio" type="radio" value="{{variant.id}}">
+                      <span class="hidden-visually">Stock {% if variant.stock < 1 %}<span style="color:red;">Out of Stock</span>{% endif %} </span>
+                      <span class="plan-details" aria-hidden="true">
+                        <span class="plan-type">  {% if variant.stock < 1 %}<span style="color:red;">Out of Stock</span> {% else %}Stock{% endif %}</span>
+                        <span class="plan-cost">{{variant.stock}}</span>
+                        <span>{{variant.color}}</span>
+                        <span>{{variant.size}}</span>
+                        
+                      </span>
+                    </label>
+                    {% empty %}
+                    <div></div>
+                    <div><p>No Variant available check back later</p></div>
+                    
+                    {% endfor %}
+
+                    
+                  </div>
+                      <!-- Start Product Action  -->
+                      <ul class="product-action d-flex-center mb--0">
+                      
+                        <li class="add-to-cart">
+                          <button
+                            type="submit"
+                            href="{{ object.get_add_to_cart_url }}"
+                            class="axil-btn btn-bg-primary"
+                          >
+                            Add to Cart 
+                          </button>
+                        </li>
+                    
+                      </ul>
+                </form>
+
+                <script>
+                  document.getElementById("cardForm").addEventListener("submit", function(event) {
+                    var selectedOption = document.querySelector('input[name="plan"]:checked');
+                    if (!selectedOption) {
+                      event.preventDefault();
+                      alert("Please select an option before submitting.");
+                    }
+                  });
+                </script>
+                  
+
+                  {% comment %} <div class="product-variations-wrapper">
                     <!-- Start Product Variation  -->
                     <div class="product-variation">
                       <h6 class="title">Colors:</h6>
@@ -85,7 +287,7 @@
                       </div>
                     </div>
                     <!-- End Product Variation  -->
-
+                   
                     <!-- Start Product Variation  -->
                     <form method="POST" action="{{ object.get_first_add_to_cart_url }}">
                     {% if object.size.all|length %}
@@ -110,18 +312,11 @@
                     {% endif %}
 
                     <!-- End Product Variation  -->
-                  </div>
+                  </div> {% endcomment %}
 
-                  <!-- Start Product Action Wrapper  -->
+                  {% comment %} <!-- Start Product Action Wrapper  -->
                   <div class="product-action-wrapper d-flex-center">
-                    <!-- Start Quentity Action  -->
-                    {% comment %}
-                    <div class="pro-qty mr--20">
-                      <input type="text" value="1" />
-                    </div>
-                    {% endcomment %}
-                    <!-- End Quentity Action  -->
-
+              
                     <!-- Start Product Action  -->
                     <ul class="product-action d-flex-center mb--0">
                       {% if object.stock == 0 %}
@@ -151,7 +346,7 @@
                       </li>
                     </ul>
                     <!-- End Product Action  -->
-                  </div>
+                  </div> {% endcomment %}
                 </form>
                   <!-- End Product Action Wrapper  -->
 
@@ -204,3 +399,5 @@
     console.log(this.value);
   });
 </script>
+
+
