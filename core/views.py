@@ -444,8 +444,9 @@ def payment_response(request):
     # assign the payment to the order
     for item in order.items.all():
         item.item.stock -= item.quantity
-        item.item.sold += item.quantity
+        item.item.product.sold += item.quantity
         item.item.save()
+        item.item.product.save()
 
     order_items = order.items.all()
     order_items.update(ordered=True)
