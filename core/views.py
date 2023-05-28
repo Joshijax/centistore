@@ -515,7 +515,7 @@ def process_flutter_payment(name, email, amount, phone, order):
         "tx_ref": ''+str(math.floor(1000000 + random.random()*9000000)),
         "amount": amount,
         "currency": "NGN",
-        "redirect_url": "127.0.0.1:8000/callback",
+        "redirect_url": "https://www.centiastore.com/callback",
         "payment_options": "card",
         "meta": {
             "consumer_id": 23,
