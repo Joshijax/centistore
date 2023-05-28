@@ -10,36 +10,41 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from .mixins import AdminRequiredMixin
-
+from django.db.models import Q
 
 
 class DashboardHomeView(LoginRequiredMixin, AdminRequiredMixin, View):
-     """
-    Display homepage of the dashboard.
     """
-     context = {}
-     template_name = 'dashboard/index.html'
-     context_object = {}
-     def get(self, request, *args, **kwargs):
- 
+   Display homepage of the dashboard.
+   """
+    context = {}
+    template_name = 'dashboard/index.html'
+    context_object = {}
+
+    def get(self, request, *args, **kwargs):
+
         product_create_form = ProductForm()
         self.context_object["all_users"] = User.objects.all().order_by("-id")
-        self.context_object["all_order"] = Order.objects.filter(ordered = True).order_by("-id")
+        self.context_object["all_order"] = Order.objects.filter(
+            ordered=True).order_by("-id")[:10]
         self.context_object["all_products"] = Products.objects.all()
-        self.context_object["sales"] = Order.objects.filter(ordered=True).count()
+        self.context_object["sales"] = Order.objects.filter(
+            ordered=True).count()
         self.context_object["product_create_form"] = product_create_form
         self.context_object["product_create_form"] = product_create_form
 
         return render(request, self.template_name, self.context_object)
-     
+
+
 class ProductDashboardView(LoginRequiredMixin, AdminRequiredMixin, View):
-     """
-    Display homepage of the dashboard.
     """
-     context = {}
-     template_name = 'dashboard/products.html'
-     context_object = {}
-     def get(self, request, *args, **kwargs):
+   Display homepage of the dashboard.
+   """
+    context = {}
+    template_name = 'dashboard/products.html'
+    context_object = {}
+
+    def get(self, request, *args, **kwargs):
 
         product_create_form = ProductForm()
         self.context_object["all_users"] = User.objects.all().order_by("-id")
@@ -49,7 +54,6 @@ class ProductDashboardView(LoginRequiredMixin, AdminRequiredMixin, View):
         self.context_object["product_create_form"] = product_create_form
 
         return render(request, self.template_name, self.context_object)
-     
 
 
 class AddProductsView(LoginRequiredMixin, AdminRequiredMixin, View):
@@ -64,7 +68,6 @@ class AddProductsView(LoginRequiredMixin, AdminRequiredMixin, View):
 
         self.context_object["product_form"] = ProductForm()
         self.context_object["image_form"] = ImageForm()
-        
 
         return render(request, self.template_name, self.context_object)
 
@@ -84,10 +87,9 @@ class AddProductsView(LoginRequiredMixin, AdminRequiredMixin, View):
             return render(request, 'dashboard/addproducts.html', context)
 
             # return redirect('dashboard:products', slug=product.slug)
- 
+
 
 class UpdateProductsView(LoginRequiredMixin, AdminRequiredMixin, View):
-
 
     template_name = 'dashboard/updProduct.html'
     context_object = {}
@@ -96,64 +98,65 @@ class UpdateProductsView(LoginRequiredMixin, AdminRequiredMixin, View):
 
         old_product = get_object_or_404(Products, slug=self.kwargs.get("slug"))
         self.context_object["product_images"] = old_product.picture
-        self.context_object["product_form"] = updProductForm(instance=old_product)
+        self.context_object["product_form"] = updProductForm(
+            instance=old_product)
         self.context_object["image_form"] = ImageForm()
-        
 
         return render(request, self.template_name, self.context_object)
 
     def post(self, request, *args, **kwargs):
         old_product = get_object_or_404(Products, slug=self.kwargs.get("slug"))
-        product_form = updProductForm(request.POST, request.FILES, instance=old_product)
+        product_form = updProductForm(
+            request.POST, request.FILES, instance=old_product)
         image_form = ImageForm(request.POST, request.FILES)
         if product_form.is_valid():
             product = product_form.save(commit=False)
             if request.FILES.get('image', None) is None:
                 product.image = product.image  # Use previous image if none uploaded
                 product.save()
-            product_form.save() 
+            product_form.save()
             if image_form.is_valid():
                 for file in request.FILES.getlist('file'):
                     Images.objects.create(post=product, file=file)
             messages.success(request, 'Updated product successfully.')
-            return redirect('dashboard:updateproduct', slug= self.kwargs.get("slug"))
-            
+            return redirect('dashboard:updateproduct', slug=self.kwargs.get("slug"))
+
         else:
             # If ProductForm is not valid, pass the form to the template with errors
             messages.error(request, 'error updating product....')
             context = {'product_form': product_form, 'image_form': image_form}
-            return redirect('dashboard:updateproduct', slug= self.kwargs.get("slug"))
+            return redirect('dashboard:updateproduct', slug=self.kwargs.get("slug"))
 
             # return redirect('dashboard:products', slug=product.slug)
- 
 
-class CreateFormsView(LoginRequiredMixin, AdminRequiredMixin,View):
+
+class CreateFormsView(LoginRequiredMixin, AdminRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         category_form = CategoryForm()
         subcategory_form = SubCategoryForm()
         color_form = ColorForm()
         size_form = SizeForm()
-        coupon_form =CouponForm()
+        coupon_form = CouponForm()
         context = {
             'category_form': category_form,
             'subcategory_form': subcategory_form,
             'color_form': color_form,
             'size_form': size_form,
-            "coupon_form":coupon_form
+            "coupon_form": coupon_form
         }
         return render(request, 'dashboard/create_forms.html', context)
-    
+
     def post(self, request, *args, **kwargs):
         category_form = CategoryForm(request.POST)
         subcategory_form = SubCategoryForm(request.POST)
         color_form = ColorForm(request.POST)
         size_form = SizeForm(request.POST)
-        coupon_form =CouponForm(request.POST)
+        coupon_form = CouponForm(request.POST)
         if subcategory_form.is_valid():
             category = subcategory_form.save()
             messages.success(request, 'Category created successfully.')
             return redirect('dashboard:utils_dash')
-        elif category_form.is_valid() :
+        elif category_form.is_valid():
             subcategory = category_form.save()
             messages.success(request, 'Subcategory created successfully.')
             return redirect('dashboard:utils_dash')
@@ -175,12 +178,12 @@ class CreateFormsView(LoginRequiredMixin, AdminRequiredMixin,View):
                 'subcategory_form': subcategory_form,
                 'color_form': color_form,
                 'size_form': size_form,
-                "coupon_form":coupon_form
+                "coupon_form": coupon_form
             }
             return render(request, 'dashboard/create_forms.html', context)
 
 
-class ListModelsView(LoginRequiredMixin, AdminRequiredMixin,ListView):
+class ListModelsView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     model = Category
     template_name = 'dashboard/list_models.html'
     context_object_name = 'categories'
@@ -192,14 +195,16 @@ class ListModelsView(LoginRequiredMixin, AdminRequiredMixin,ListView):
         context['sizes'] = size.objects.all()
         context['coupons'] = Coupon.objects.all()
         return context
-    
+
 
 class OrderListView(ListView):
     model = Order
     ordering = ['-ordered_date']
     template_name = 'dashboard/orders.html'
+
     def get_queryset(self):
         return super().get_queryset().exclude(payment=None)
+
 
 class OrderDetailView(View):
     def get(self, request, pk):
@@ -226,20 +231,21 @@ def delete_model(request, model, id):
             model_class = Coupon
         elif model == 'image':
             model_class = Images
-        elif model == 'product': 
+        elif model == 'product':
             model_class = Products
         else:
             return JsonResponse({'message': 'Invalid model.'}, status=400)
-          
+
         # Attempt to delete the model instance with the given ID.
-       
+
         model_class.objects.get(id=id).delete()
         return JsonResponse({'message': f'{model} deleted successfully.'}, status=200)
-    
+
         return JsonResponse({'message': f'Error deleting {model}.'}, status=500)
     else:
         return JsonResponse({'message': 'Invalid method.'}, status=400)
-    
+
+
 @csrf_exempt
 def update_status(request, status, id):
     try:
@@ -251,7 +257,7 @@ def update_status(request, status, id):
     except:
         messages.error(request, 'message: Error Uodating.')
         return redirect('dashboard:order_list')
-   
+
 
 @csrf_exempt
 def update_status_in(request, status, id):
@@ -264,4 +270,3 @@ def update_status_in(request, status, id):
     except:
         messages.error(request, 'message: Error Uodating.')
         return redirect('dashboard:ord_details', pk=id)
-   

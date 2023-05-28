@@ -94,7 +94,10 @@
         <p><strong>Payment Status:</strong> {{ order.payment.status }}</p>
         <p><strong>Amount Paid:</strong> {{ order.payment.amount }}</p>
         <p><strong>Trx Id:</strong> {{ order.payment.trx_ref }}</p>
-        <p><strong>Status:</strong>     {% if order.status == 'DSO' %}
+        <p><strong>Flutterwave:</strong> {{ order.payment.trx_ref }}  <button type="button" class="btn btn-primary"  id="paymentButton">
+          Verify Payment
+        </button></p>
+        <p><strong>Status:</strong>  {{order.statu}}   {% if order.status == 'PR' %}
             <span class="badge badge-warning">Dispatching soon</span>
             {% endif %}
             {% if order.status == 'DL' %}
@@ -115,15 +118,15 @@
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   
-                  <a href="/dashboard/update-status-in/DSO/{{order.id}}" class="dropdown-item" class="badge badge-warning">Dispatching soon</>
+                  <a href="/dashboard/update-status-in/PR/{{order.id}}" class="dropdown-item" class="badge badge-warning">Processing</a>
                  
                   
-                  <a href="/dashboard/update-status-in/DL/{{order.id}}" class="dropdown-item" class="badge badge-success">Delivered</>
+                  <a href="/dashboard/update-status-in/DL/{{order.id}}" class="dropdown-item" class="badge badge-success">Delivered</a>
          
                 
-                  <a href="/dashboard/update-status-in/IT/{{order.id}}" class="dropdown-item" class="badge badge-success">In transit</>
+                  <a href="/dashboard/update-status-in/IT/{{order.id}}" class="dropdown-item" class="badge badge-success">In transit</a>
           
-                  <a href="/dashboard/update-status-in/DS/{{order.id}}" class="dropdown-item" class="badge badge-success">Dispatched</>
+                  <a href="/dashboard/update-status-in/DS/{{order.id}}" class="dropdown-item" class="badge badge-success">Dispatched</a>
                     <a href="/dashboard/update-status/CL/{{order.id}}" class="dropdown-item" class="badge badge-success">Cancelled<a/>
              
                 </div>
@@ -215,6 +218,23 @@
     </div>
     <!--/.col (left) -->
     <!-- right column -->
+
+    <!-- Bootstrap Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="paymentModalLabel">Payment Result</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="paymentResult"></div>
+      </div>
+    </div>
+  </div>
+</div>
     <div class="col-md-6">
     
     </div>
@@ -234,6 +254,70 @@
     <!-- /.control-sidebar -->
     </div>
     <!-- ./wrapper -->
+
+<!-- Your template.html -->
+
+<!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    // Handle button click event
+    $('#paymentButton').click(function() {
+      $('#paymentButton').prop('disabled', true).text('Please Wait...');
+      // Get the value for tx_ref
+      var txRef = "{{ order.payment.trx_ref }}"; // Replace with the desired value and ensure it's properly formatted
+
+      console.log(txRef)
+
+      // Make AJAX request to the Django view
+      $.ajax({
+        type: 'POST',
+        url: '{% url "core:confirm" %}?tx_ref=' + txRef,  // Replace with the correct URL for your 
+        data: { tx_ref: txRef }, // Pass txRef as data instead of a query parameter
+        success: function(response) {
+          $('#paymentButton').prop('disabled', false).text('Verify Payment');
+          // Update modal content with the payment result
+          var val = response.val;
+
+          console.log(val, "kay")
+
+          if (val.transactionComplete) {
+            resultHtml = '<p>Transaction Successful</p>';
+            resultHtml += '<p>Transaction Reference: ' + val.txRef + '</p>';
+          resultHtml += '<p><b>Amount Paid: ' + val.chargedamount + '</b></p>';
+          resultHtml += '<p>Flutterwave Ref: ' + val.flwRef + '</p>';
+          resultHtml += '<p>Check here: <a target=”_blank” href="https://app.flutterwave.com/dashboard/transactions/list/' + val.meta[0].getpaidTransactionId + '">' + 'Check here</a></p>';
+          // Add other fields as desired
+
+          $('#paymentResult').html(resultHtml);
+
+          // Show the modal
+          $('#paymentModal').modal('show');
+          } else {
+            resultHtml = '<p>Transaction Failed</p>';
+            $('#paymentResult').html(resultHtml);
+
+            // Show the modal
+            $('#paymentModal').modal('show');
+          }
+          
+        },
+        error: function(xhr, status, error) {
+          // Handle error if necessary
+
+          $('#paymentButton').prop('disabled', false).text('Verify Payment');
+          resultHtml = '<p>Transaction Failed</p>';
+          $('#paymentResult').html(resultHtml);
+
+          // Show the modal
+          $('#paymentModal').modal('show');
+          console.log(error);
+        }
+      });
+    });
+  });
+</script>
 
 
 

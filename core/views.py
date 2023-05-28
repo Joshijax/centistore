@@ -8,7 +8,7 @@ from functools import reduce
 import operator
 from django.db.models import Q
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import stripe
 from django.views.decorators.csrf import csrf_exempt
 from requests.exceptions import ConnectionError
@@ -27,7 +27,7 @@ from .models import Category, Customer, Products, OrderItem, Order, Address, Pay
 from python_flutterwave import payment
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
-from rave_python import Rave
+from rave_python import Rave, RaveExceptions
 from django.utils.decorators import method_decorator
 import environ
 
@@ -40,8 +40,11 @@ env = environ.Env()
 environ.Env.read_env()
 
 
-public_key = settings.FLUTTER_LIVE_PUBLIC_KEY
-secret_key = settings.FLUTTER_LIVE_SECRET_KEY
+# public_key = settings.FLUTTER_LIVE_PUBLIC_KEY
+# secret_key = settings.FLUTTER_LIVE_SECRET_KEY
+
+public_key = settings.FLUTTER_TEST_PUBLIC_KEY
+secret_key = settings.FLUTTER_TEST_SECRET_KEY
 rave = Rave(public_key, secret_key, usingEnv=False)
 payment.token = secret_key
 auth_token = secret_key
@@ -393,6 +396,23 @@ class CheckoutView1(View):
             return redirect("core:order-summary")
 
 
+@csrf_exempt
+@require_http_methods(['GET', 'POST'])
+def confirm_payment(request):
+    tx_ref = request.GET.get('tx_ref', None)
+    current_url = request.build_absolute_uri()
+    print(current_url, "here again", tx_ref)
+
+    val = None
+    try:
+        val = rave.Card.verify(tx_ref)
+        print(val)
+    except RaveExceptions.TransactionVerificationError as e:
+        return JsonResponse({'error': e})
+
+    return JsonResponse({'val': val})
+
+
 @require_http_methods(['GET', 'POST'])
 def payment_response(request):
     status = request.GET.get('status', None)
@@ -404,6 +424,7 @@ def payment_response(request):
         return redirect("core:home")
     try:
         val = rave.Card.verify(tx_ref)
+        print(val)
     except ConnectionError as e:    # This is the correct syntax
         redirect(str(current_url))
 
@@ -494,7 +515,7 @@ def process_flutter_payment(name, email, amount, phone, order):
         "tx_ref": ''+str(math.floor(1000000 + random.random()*9000000)),
         "amount": amount,
         "currency": "NGN",
-        "redirect_url": "https://www.centiastore.com/callback",
+        "redirect_url": "127.0.0.1:8000/callback",
         "payment_options": "card",
         "meta": {
             "consumer_id": 23,

@@ -8,6 +8,7 @@ from .views import (
     HomeView2,
     OrderSummaryView,
     add_to_cart,
+    confirm_payment,
     remove_from_cart,
     remove_single_item_from_cart,
     # PaymentView,
@@ -34,6 +35,7 @@ urlpatterns = [
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('checkout1/', CheckoutView1.as_view(), name='checkout1'),
     path('callback', payment_response, name='payment_response'),
+    path('confirm', confirm_payment, name='confirm'),
     path('shop/', ShopView.as_view(), name='shop'),
     path(
         route='category/<str:slug>/<str:cate>',
@@ -53,5 +55,4 @@ urlpatterns = [
          name='remove-single-item-from-cart'),
     # path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
     path('request-refund/', RequestRefundView.as_view(), name='request-refund')
-] 
-
+]

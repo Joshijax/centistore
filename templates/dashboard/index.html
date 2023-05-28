@@ -107,22 +107,43 @@
                   <thead>
                     <tr>
                       <th>Order ID</th>
+                      <th>Status</th>
+                      <th>Trx Id</th>
                       <th>Item</th>
                       <th>price</th>
                       <th>quantity</th>
+                      <th>Verify</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
 
                     {% for order in all_order %}
-                    <tr>
+                    
+                    <tr style="">
                       <td>{{order.id}}</td>
+                      <td><span style="background: {% if order.status == 'PR' %} #FFC107 {% elif order.status == 'IT' %}#2196F3 {% elif order.status == 'DL' %} {% else %} #4CAF50 {% endif %}" class="badge badge-warning">{% if order.status == 'PR' %} Processing {% elif order.status == 'IT' %}In transit {% elif order.status == 'DL' %}Delivered {% else %} {% endif %}"</span></td>
+                      <td>{{order.payment.trx_ref }}</td>
                       <td>{{order.items.all|length}}</td>
-                      <td>{{order.get_total}}</td>
+                      <td>{{order.payment.amount}}</td>
                       <td>
                         {{order.get_qty}}
                       </td>
+                      
+
+                      <td>
+                        <button type="button" class="btn btn-primary paymentButton" data-id="{{order.payment.trx_ref }}"  >
+                          Verify Payment
+                        </button>
+                      </td>
+                      <td>
+                        <a href="{% url 'dashboard:ord_details' order.id %}" type="button" class="btn btn-secondary"   >
+                          View
+                        </a>
+                      </td>
                     </tr>
+
+                  
                     {% endfor %}
                   </tbody>
                 </table>
@@ -218,10 +239,89 @@
 <aside class="control-sidebar control-sidebar-dark">
   <!-- Control sidebar content goes here -->
 </aside>
+
+<div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="paymentModalLabel">Payment Result</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="paymentResult"></div>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- /.control-sidebar -->
 
 <!-- Main Footer -->
 </div>
 <!-- ./wrapper -->
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    // Handle button click event
+    $('.paymentButton').click(function() {
+      var $button = $(this);
+      $button.prop('disabled', true).text('Please Wait...');
+      // Get the value for tx_ref
+      var txRef = $button.data('id'); // Replace with the desired value and ensure it's properly formatted
+
+      console.log(txRef)
+
+      // Make AJAX request to the Django view
+      $.ajax({
+        type: 'POST',
+        url: '{% url "core:confirm" %}?tx_ref=' + txRef,  // Replace with the correct URL for your 
+        data: { tx_ref: txRef }, // Pass txRef as data instead of a query parameter
+        success: function(response) {
+          $button.prop('disabled', false).text('Verify Payment');
+          // Update modal content with the payment result
+          var val = response.val;
+
+          console.log(val, "kay")
+
+          if (val.transactionComplete) {
+            resultHtml = '<p>Transaction Successful</p>';
+            resultHtml += '<p>Transaction Reference: ' + val.txRef + '</p>';
+            resultHtml += '<p><b>Amount Paid: ' + val.chargedamount + '</b></p>';
+            resultHtml += '<p>Flutterwave Ref: ' + val.flwRef + '</p>';
+            resultHtml += '<p>Check here: <a target=”_blank” href="https://app.flutterwave.com/dashboard/transactions/list/' + val.meta[0].getpaidTransactionId + '">' + 'Check here</a></p>';
+            // Add other fields as desired
+  
+            $('#paymentResult').html(resultHtml);
+  
+            // Show the modal
+            $('#paymentModal').modal('show');
+          } else {
+            resultHtml = '<p>Transaction Failed</p>';
+            $('#paymentResult').html(resultHtml);
+  
+            // Show the modal
+            $('#paymentModal').modal('show');
+          }
+         
+        },
+        error: function(xhr, status, error) {
+          // Handle error if necessary
+          $button.prop('disabled', false).text('Verify Payment');
+          resultHtml = '<p>Transaction Failed</p>';
+          $('#paymentResult').html(resultHtml);
+
+          // Show the modal
+          $('#paymentModal').modal('show');
+          console.log(error);
+        }
+      });
+    });
+  });
+</script>
+
 
 {% endblock content %}

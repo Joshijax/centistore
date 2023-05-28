@@ -1,162 +1,207 @@
-{% extends "dashboard/base/base.html" %}
-{% load static %}
-{% block content %}
-{% load mathfilters %}
-{% load crispy_forms_tags %}  
+{% extends "dashboard/base/base.html" %} {% load static %} {% block content %}
+{% load mathfilters %} {% load crispy_forms_tags %}
 <!-- Content Wrapper. Contains page content -->
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <section class="content-header">
+  <section class="content-header">
     <div class="container-fluid">
-    <div class="row mb-2">
-    <div class="col-sm-6">
-    <h1>Orders</h1>
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Orders</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+            <li class="breadcrumb-item active">Orders</li>
+          </ol>
+        </div>
+      </div>
     </div>
-    <div class="col-sm-6">
-    <ol class="breadcrumb float-sm-right">
-    <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-    <li class="breadcrumb-item active">Orders</li>
-    </ol>
-    </div>
-    </div>
-    </div><!-- /.container-fluid -->
-    </section>
-    <!-- Main content -->
-    <section class="content">
+    <!-- /.container-fluid -->
+  </section>
+  <!-- Main content -->
+  <section class="content">
     <div class="row">
-    <div class="col-12">
-    
-    <div class="card">
-    <div class="card-header">
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body">
-    <table id="example1" class="table table-bordered table-striped">
-    <thead>
-    <tr>
-    <th>id</th>
-    <th>transactionId</th>
-    <th>purchased by</th>
-    <th>Shipping Status</th>
-    <th>date</th>
-    <th></th>
-    <th></th>
-    <th></th>
-    </tr>
-    </thead>
-    <tbody>
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header"></div>
+          <!-- /.card-header -->
+          <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>transactionId</th>
+                  <th>purchased by</th>
+                  <th>Shipping Status</th>
+                  <th>date</th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in object_list %}
+                <tr>
+                  <td>{{order.id}}</td>
+                  <td>{{order.payment.trx_ref}}</td>
+                  <td>{{order.user.name}}</td>
+                  <td>
+                    {% if order.status == 'PR' %}
+                    <span class="badge badge-warning">Processing</span>
+                    {% endif %} {% if order.status == 'DL' %}
+                    <span class="badge badge-success">Delivered</span>
+                    {% endif %} {% if order.status == 'IT' %}
+                    <span class="badge badge-success">In transit</span>
+                    {% endif %} {% if order.status == 'DS' %}
+                    <span class="badge badge-success">Dispatched</span>
+                    {% endif %} {% if order.status == 'CL' %}
+                    <span class="badge badge-error">Cancelled</span>
+                    {% endif %}
+                  </td>
+                  <td>{{order.ordered_date}}</td>
+                  <td>
+                    <a
+                      href="{% url 'dashboard:ord_details' order.id %}"
+                      class="btn btn-default"
+                      >View details</a
+                    ><br /><br />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button
+                        class="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        id="dropdownMenuButton"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
+                        Manage Shipping Status
+                      </button>
+                      <div
+                        class="dropdown-menu"
+                        aria-labelledby="dropdownMenuButton"
+                      >
+                        <a
+                          href="/dashboard/update-status-in/PR/{{order.id}}"
+                          class="dropdown-item"
+                          class="badge badge-warning"
+                          >Processing</a
+                        >
 
-    {% for order in object_list %}
-    <tr>
-        <td>{{order.id}}</td>
-        <td>{{order.payment.trx_ref}}</td>
-        <td>{{order.user.name}}</td>
-        <td>
-        {% if order.status == 'DSO' %}
-        <span class="badge badge-warning">Dispatching soon</span>
-        {% endif %}
-        {% if order.status == 'DL' %}
-        <span class="badge badge-success">Delivered</span>
-        {% endif %}
-        {% if order.status == 'IT' %}
-        <span class="badge badge-success">In transit</span>
-        {% endif %}
-        {% if order.status == 'DS' %}
-        <span class="badge badge-success">Delivered</span>
-        {% endif %}
-        {% if order.status == 'CL' %}
-        <span class="badge badge-error">Cancelled</span>
-        {% endif %}
-      
-        </td>
-        <td>{{order.ordered_date}}</td>
-        <td><a href="{% url 'dashboard:ord_details' order.id %}" class="btn btn-default">View details</a><br/><br/>
-        </td>
-        <td><div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Manage Shipping Status
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            
-            <a href="/dashboard/update-status/DSO/{{order.id}}" class="dropdown-item" class="badge badge-warning">Dispatching soon<a/>
-           
-            
-            <a href="/dashboard/update-status/DL/{{order.id}}" class="dropdown-item" class="badge badge-success">Delivered<a/>
-   
-          
-            <a href="/dashboard/update-status/IT/{{order.id}}" class="dropdown-item" class="badge badge-success">In transit<a/>
-    
-            <a href="/dashboard/update-status/DS/{{order.id}}" class="dropdown-item" class="badge badge-success">Dispatched<a/>
-            <a href="/dashboard/update-status/CL/{{order.id}}" class="dropdown-item" class="badge badge-success">Cancelled<a/>
+                        <a
+                          href="/dashboard/update-status/DL/{{order.id}}"
+                          class="dropdown-item"
+                          class="badge badge-success"
+                          >Delivered</a
+                        >
 
-       
-          </div>
-        </div></td>
-        <td><button data-model="order" data-id="{{ order.id }}" class="btn btn-danger delete-button" onclick="DeleteMyOrder(`<?php echo $orders['transactionId'];?>`);">delete</button></td>
-        </tr>
-    {% endfor %}
+                        <a
+                          href="/dashboard/update-status/IT/{{order.id}}"
+                          class="dropdown-item"
+                          class="badge badge-success"
+                          >In transit</a
+                        >
 
-    <script>
-        var deleteButtons = document.querySelectorAll('.delete-button');
-        for (var i = 0; i < deleteButtons.length; i++) {
-            deleteButtons[i].addEventListener('click', function() {
-                var model = this.dataset.model;
-                var id = this.dataset.id;
-                if (confirm('Are you sure you want to delete this ' + model + '?')) {
-                    fetch('delete/' + model + '/' + id + '/', {
-                        method: 'POST'
-                    }).then(response => response.json())
-                        .then(data => {
+                        <a
+                          href="/dashboard/update-status/DS/{{order.id}}"
+                          class="dropdown-item"
+                          class="badge badge-success"
+                          >Dispatched</a
+                        >
+                        <a
+                          href="/dashboard/update-status/CL/{{order.id}}"
+                          class="dropdown-item"
+                          class="badge badge-success"
+                          >Cancelled</a
+                        >
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <button
+                      data-model="order"
+                      data-id="{{ order.id }}"
+                      class="btn btn-danger delete-button"
+                      onclick="DeleteMyOrder(`<?php echo $orders['transactionId'];?>`);"
+                    >
+                      delete
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+
+                <script>
+                  var deleteButtons =
+                    document.querySelectorAll(".delete-button");
+                  for (var i = 0; i < deleteButtons.length; i++) {
+                    deleteButtons[i].addEventListener("click", function () {
+                      var model = this.dataset.model;
+                      var id = this.dataset.id;
+                      if (
+                        confirm(
+                          "Are you sure you want to delete this " + model + "?"
+                        )
+                      ) {
+                        fetch("delete/" + model + "/" + id + "/", {
+                          method: "POST",
+                        })
+                          .then((response) => response.json())
+                          .then((data) => {
                             alert(data.message);
                             window.location.reload();
-                        })
-                        .catch(error => {
-                            alert('An error occurred while deleting the ' + model + '.');
+                          })
+                          .catch((error) => {
+                            alert(
+                              "An error occurred while deleting the " +
+                                model +
+                                "."
+                            );
                             console.log(error);
-                        });
-                }
-            });
-        }
-    </script>
-    <script>
-    function DeleteMyOrder(id){
-    var myid = id;    
-    swal("Are You Sure You want to delete?",{
-    icon:"info",    
-    buttons: {
-    cancel: "no",
-    catch: {
-    text: "yes",
-    value: "yes",
-    }
-    }, 
-    })
-    .then((value) => {
-    switch (value) { 
-    case "yes":
-    window.location="DeleteOrder.php?id="+myid;
-    break;
-    
-    default:
-    //window.location="dashboard-a-artistlist";
-    }
-    });
-    }    
-    </script>
-    </tbody>
-    </table>
-    </div>
-    <!-- /.card-body -->
-    </div>
-    <!-- /.card -->
-    </div>
-    <!-- /.col -->
+                          });
+                      }
+                    });
+                  }
+                </script>
+                <script>
+                  function DeleteMyOrder(id) {
+                    var myid = id;
+                    swal("Are You Sure You want to delete?", {
+                      icon: "info",
+                      buttons: {
+                        cancel: "no",
+                        catch: {
+                          text: "yes",
+                          value: "yes",
+                        },
+                      },
+                    }).then((value) => {
+                      switch (value) {
+                        case "yes":
+                          window.location = "DeleteOrder.php?id=" + myid;
+                          break;
+
+                        default:
+                        //window.location="dashboard-a-artistlist";
+                      }
+                    });
+                  }
+                </script>
+              </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
     </div>
     <!-- /.row -->
-    </section>
-    <!-- /.content -->
-    </div>
-    <!-- /.content-wrapper -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
 
 {% endblock content %}

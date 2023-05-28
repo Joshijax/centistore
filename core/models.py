@@ -32,7 +32,7 @@ STATUS_CHOICES = (
     ('DS', 'Dispatched'),
     ('IT', 'In transit'),
     ('DL', 'Delivered'),
-    ('DSO', 'Dispatching soon'),
+    ('PR', 'Processing'),
     ('CL', 'Cancelled'),
 )
 
@@ -223,7 +223,7 @@ class Order(models.Model):
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
     status = models.CharField(choices=STATUS_CHOICES,
-                              max_length=3, default='DSO')
+                              max_length=3, default='PR')
 
     '''
     1. Products added to cart
