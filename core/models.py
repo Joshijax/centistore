@@ -171,6 +171,9 @@ class Variants(models.Model):
 
     stock = models.IntegerField(default=0)
 
+    def __str__(self):
+        return f"{self.product.name}, color {self.color.name}, size {self.size.name}"
+
 
 class OrderItem(models.Model):
     user = models.ForeignKey(
@@ -186,6 +189,10 @@ class OrderItem(models.Model):
     def get_total_item_price(self):
         if self.item.stock < self.quantity:
             return 0
+        return self.quantity * self.item.product.price
+
+    def get_total_item_price2(self):
+        # print(self.quantity, self.item.product.price)
         return self.quantity * self.item.product.price
 
     def get_total_discount_item_price(self):
@@ -243,6 +250,16 @@ class Order(models.Model):
         total = 0
         for order_item in self.items.all():
             total += order_item.get_final_price()
+
+        if self.coupon:
+            total -= self.coupon.amount
+        return total
+
+    def get_total2(self):
+        total = 0
+        for order_item in self.items.all():
+            # print("hereeeeeee", order_item.get_total_item_price2())
+            total += order_item.get_total_item_price2()
 
         if self.coupon:
             total -= self.coupon.amount

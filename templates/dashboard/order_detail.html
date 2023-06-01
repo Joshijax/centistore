@@ -189,18 +189,18 @@
             <tbody>
               {% for item in order.items.all %}
                 <tr>
-                  <td>{{ item.item.name }}</td>
-                  <td>{{ item.size.name }}</td>
+                  <td>{{ item.item }}</td>
+                  <td>{{ item.item.size.name }}</td>
                   <td>{{ item.quantity }}</td>
-                  <td>₦{{ item.item.price }}</td>
-                  <td>₦{{ item.get_total_item_price }}</td>
+                  <td>₦{{ item.item.product.price }}</td>
+                  <td>₦{{ item.get_total_item_price2 }}</td>
                 </tr>
               {% endfor %}
             </tbody>
             <tfoot class="bg-secondary">
               <tr>
                 <td>Sub Total</td>
-                <td>₦{{ order.get_total }}</td>
+                <td>₦{{ order.get_total2 }}</td>
               </tr>
             </tfoot>
           </table>
