@@ -66,6 +66,24 @@
     <link rel="stylesheet" href="{% static 'assets/css/vendor/magnific-popup.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/vendor/base.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/style.min.css' %}">
+
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+       <!-- ✅ load jQuery ✅ -->
+       <script
+       src="https://code.jquery.com/jquery-3.6.0.min.js"
+       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+       crossorigin="anonymous"
+     ></script>
+ 
+     <!-- ✅ load JS for Select2 ✅ -->
+     <script
+       src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+       integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+       crossorigin="anonymous"
+       referrerpolicy="no-referrer"
+     ></script>
+
     
   <title>{% block head_title %}CENTIA COLLECTION{% endblock %}</title>
   {% block extra_head %}
@@ -98,6 +116,139 @@
     .redeem{
       height: -webkit-fill-available;
     }
+
+
+    .form-group {
+      position: relative;
+      border-radius: 5px;
+   }
+   
+   .form-arrow {
+      position: absolute;
+      top: 1.65rem;
+      right: 0.5rem;
+      z-index: 10;
+      font-size: 1.35rem;
+      line-height: inherit;
+      color: #333333; /* Replace with your desired color */
+   }
+   
+   .form .dropdown {
+      position: relative;
+      background: white;
+      padding: 15px
+   }
+  
+   .dropdown {
+    position: relative;
+    background: white !important;
+    padding: 15px !important;
+    border: 1px solid #dddddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+   
+   .form .dropdown-select {
+      position: relative;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      cursor: pointer;
+      user-select: none;
+      width: 100%;
+      height: auto;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      outline: none;
+      border-radius: 0.25rem;
+      color: #000000; /* Replace with your desired color */
+      background-clip: padding-box;
+      background-color: #ffffff; /* Replace with your desired color */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Replace with your desired box-shadow */
+      transition: all 0.3s ease-in-out;
+   }
+   
+  .dropdown-menu {
+  
+      display: none;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      border-radius: 0.25rem;
+      background-color: #ffffff; /* Replace with your desired color */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Replace with your desired box-shadow */
+      transition: all 0.3s ease-in-out;
+   }
+   
+   .form .dropdown-menu-inner {
+      max-height: 16rem;
+      overflow-y: scroll;
+      overflow-x: hidden;
+   }
+   
+   .form .dropdown-menu-inner::-webkit-scrollbar {
+      width: 5px;
+      height: auto;
+   }
+   
+   .form .dropdown-menu-inner::-webkit-scrollbar-thumb {
+      border-radius: 0.25rem;
+      background-color: #cccccc; /* Replace with your desired color */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Replace with your desired box-shadow */
+   }
+   
+  .dropdown-menu-item {
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: normal;
+      line-height: inherit;
+      cursor: pointer;
+      user-select: none;
+      padding: 0.65rem 1.25rem;
+      background-color: #ffffff; /* Replace with your desired color */
+      transition: all 0.2s ease-in-out;
+   }
+   
+   .form .dropdown-menu-item:hover {
+      color: #000000; /* Replace with your desired color */
+      background-color: #cccccc; /* Replace with your desired color */
+   }
+   
+   .form .dropdown-menu-item.is-select,
+   .form .dropdown-menu-item.is-select:hover {
+      color: #ffffff; /* Replace with your desired color */
+      background-color: #0000ff; /* Replace with your desired color */
+   }
+   
+   .form .dropdown-search {
+      display: block;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      width: 100%;
+      height: auto;
+      padding: 0.65rem 1.25rem;
+      border: none;
+      outline: none;
+      color: #000000; /* Replace with your desired color */
+      background-clip: padding-box;
+      background-color: #f2f2f2; /* Replace with your desired color */
+   }
+   
+   /* Wrapper */
+   .wrapper-column {
+      max-width: 40rem;
+      height: auto;
+      margin: 0 auto;
+      padding: 5rem 3rem;
+      border-radius: 0.25rem;
+      background-color: #ffffff; /* Replace with your desired color */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Replace with your desired box-shadow */
+   }
   </style>
   
 </head>
@@ -131,7 +282,7 @@
       <!-- Modernizer JS -->
       <script src="{% static 'assets/js/vendor/modernizr.min.js' %}"></script>
       <!-- jQuery JS -->
-      <script src="{% static 'assets/js/vendor/jquery.js' %}"></script>
+      {% comment %} <script src="{% static 'assets/js/vendor/jquery.js' %}"></script> {% endcomment %}
       <!-- Bootstrap JS -->
       <script src="{% static 'assets/js/vendor/popper.min.js' %}"></script>
       <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
@@ -154,5 +305,16 @@
 
     {% block extra_scripts %}
     {% endblock extra_scripts %}
+    <script type="text/javascript" >
+
+      // In your Javascript (external .js resource or <script> tag)
+       $(document).ready(function() {
+         $('.select-state').select2();
+       });
+       </script>
+
+
+  
+    
 </body>
 </html>

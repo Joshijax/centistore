@@ -23,7 +23,7 @@ from django.utils import timezone
 from django.views.generic import ListView, DetailView, View
 from django.contrib.auth import logout
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
-from .models import Category, Customer, Products, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variants, size, sub_Category
+from .models import Category, Customer, Products, LocationPrice, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile, Variants, size, sub_Category
 from python_flutterwave import payment
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
@@ -69,6 +69,33 @@ def is_valid_form(values):
     return valid
 
 
+class SubmitLocation(View):
+    def post(self, request):
+        location = request.POST.get('selected_option')
+        order_id = request.POST.get('order')
+
+        # Process the form data as needed
+        # ...
+        location_price = LocationPrice.objects.get(state=location)
+
+        # Replace 'order_id' with the ID of the specific order
+        order = Order.objects.get(id=order_id)
+
+        order.location = location_price
+        order.save()
+
+        # Prepare the response data
+        response_data = {
+            'location': location,
+            'order': order_id
+        }
+
+        print(response_data)
+
+        # Return a JSON response
+        return JsonResponse(response_data)
+
+
 class CheckoutView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -84,11 +111,13 @@ class CheckoutView(View):
                     device=device)
 
             order = Order.objects.get(user=customer, ordered=False)
+            locations = LocationPrice.objects.all()
             form = CheckoutForm()
             context = {
                 'form': form,
                 'couponform': CouponForm(),
                 'order': order,
+                'locations': locations,
                 'DISPLAY_COUPON_FORM': True,
                 'categories': sub_Category.objects.all()[:8],
                 'customer': customer

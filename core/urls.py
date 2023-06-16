@@ -22,7 +22,8 @@ from .views import (
     payment_response,
     SearchView,
     CategoryArticlesListView,
-    add_first_to_cart
+    add_first_to_cart,
+    SubmitLocation
 )
 
 app_name = 'core'
@@ -33,6 +34,7 @@ urlpatterns = [
     path('home/', HomeView2.as_view(), name='home2'),
     path('logout/', logout_request, name='logout'),
     path('checkout/', CheckoutView.as_view(), name='checkout'),
+    path('submit_location/', SubmitLocation.as_view(), name='submit_location'),
     path('checkout1/', CheckoutView1.as_view(), name='checkout1'),
     path('callback', payment_response, name='payment_response'),
     path('confirm', confirm_payment, name='confirm'),

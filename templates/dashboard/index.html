@@ -108,6 +108,7 @@
                     <tr>
                       <th>Order ID</th>
                       <th>Status</th>
+                      <th>Location</th>
                       <th>Trx Id</th>
                       <th>Item</th>
                       <th>price</th>
@@ -123,6 +124,7 @@
                     <tr style="">
                       <td>{{order.id}}</td>
                       <td><span style="background: {% if order.status == 'PR' %} #FFC107 {% elif order.status == 'IT' %}#2196F3 {% elif order.status == 'DL' %} {% else %} #4CAF50 {% endif %}" class="badge badge-warning">{% if order.status == 'PR' %} Processing {% elif order.status == 'IT' %}In transit {% elif order.status == 'DL' %}Delivered {% else %} {% endif %}"</span></td>
+                      <td>{{order.location }}</td>
                       <td>{{order.payment.trx_ref }}</td>
                       <td>{{order.items.all|length}}</td>
                       <td>{{order.payment.amount}}</td>

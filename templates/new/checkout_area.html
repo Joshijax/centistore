@@ -1,4 +1,33 @@
 {% load static %}
+<style>
+  .submit-button {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    color: #fff;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #45a049;
+  }
+  
+  .submit-button:focus {
+    outline: none;
+  }
+  
+  .submit-button:active {
+    background-color: #3e8e41;
+  }
+  
+</style>
 <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet" />
 <!-- Start Checkout Area  -->
 <div class="axil-checkout-area axil-section-gap">
@@ -36,98 +65,36 @@
           </div>
           {% endif %}
         </div>
+      
+        <form
+          method="POST"
+          id="submit_location"
+          action="{% url 'core:submit_location' %}"
+        >
+          {% csrf_token %}
+
+          <h2>Choose Your Delivery Location</h2>
+          <div class="form-group">
+            <span class="form-arrow"><i class="flaticon-arrow-down"></i></span>
+            <select name="selected_option" id="country" class="dropdown">
+              <option disabled>Select your country</option>
+
+              {% for loc in locations %}
+              <option {% if order.location.id == loc.id %}selected{% endif %} value="{{loc.state}}">
+                {{loc.state}} --- ₦ {{loc.price}}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <input type="hidden" name="order" value="{{ order.id }}" />
+          <button class="submit-button" id="submitButton" type="button"> {% if order.location %}Update Location {% else %} Submit {% endif %} </button>
+        </form>
+        {% if order.location %}
+      
         <div class="axil-checkout-billing">
           <h4 class="title mb--40">Billing details</h4>
           <form method="POST" class="card-body">
-            {% csrf_token %} {% comment %}
-            <h3>Shipping address</h3>
-
-            <div class="hideable_shipping_form">
-              <div class="md-form mb-5">
-                <input
-                  type="text"
-                  placeholder="1234 Main St"
-                  id="shipping_address"
-                  name="shipping_address"
-                  class="form-control"
-                />
-                <label for="shipping_address" class="">Address</label>
-              </div>
-
-              <div class="md-form mb-5">
-                <input
-                  type="text"
-                  placeholder="Apartment or suite"
-                  id="shipping_address2"
-                  name="shipping_address2"
-                  class="form-control"
-                />
-                <label for="shipping_address2" class=""
-                  >Address 2 (optional)</label
-                >
-              </div>
-
-              <div class="row">
-                <div class="col-lg-4 col-md-12 mb-4">
-                  <label for="country">Country</label>
-                  {{ form.shipping_country }}
-                  <div class="invalid-feedback">
-                    Please select a valid country.
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                  <label for="shipping_zip">Zip</label>
-                  <input
-                    type="text"
-                    placeholder="Zip code"
-                    id="shipping_zip"
-                    name="shipping_zip"
-                    class="form-control"
-                  />
-                  <div class="invalid-feedback">Zip code required.</div>
-                </div>
-              </div>
-
-              <div class="custom-control custom-checkbox">
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  name="same_billing_address"
-                  id="same_billing_address"
-                />
-                <label class="custom-control-label" for="same_billing_address"
-                  >Billing address is the same as my shipping address</label
-                >
-              </div>
-              <div class="custom-control custom-checkbox">
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  name="set_default_shipping"
-                  id="set_default_shipping"
-                />
-                <label class="custom-control-label" for="set_default_shipping"
-                  >Save as default shipping address</label
-                >
-              </div>
-            </div>
-
-            {% if default_shipping_address %}
-            <div class="custom-control custom-checkbox">
-              <input
-                type="checkbox"
-                class="custom-control-input"
-                name="use_default_shipping"
-                id="use_default_shipping"
-              />
-              <label class="custom-control-label" for="use_default_shipping"
-                >Use default shipping address: {{
-                default_shipping_address.street_address|truncatechars:10
-                }}</label
-              >
-            </div>
-            {% endif %} {% endcomment %}
-
+            {% csrf_token %} 
             <hr />
 
             <h3>Billing address</h3>
@@ -141,21 +108,38 @@
                 id="use_default_billing"
               />
               <label class="custom-control-label" for="use_default_billing"
-                >Use default billing address: {{default_billing_address.street_address|truncatechars:12}}</label
+                >Use default billing address:
+                {{default_billing_address.street_address|truncatechars:12}}</label
               >
             </div>
             {% endif %}
-            
-              <div class="md-form mb-5">
-                <input {% if customer.name %}value="{{customer.name}}"{% endif %} type="text" name="full_name" class="form-control" placeholder="John Doe" required="" id="id_full_name">
-                <label for="full_name" class="">Full Name</label>
-              </div>
 
-              <div class="md-form mb-5">
-                <input {% if customer.name %}value="{{customer.email}}"{% endif %} type="text" name="email" class="form-control" placeholder="JohnDoe@gmail.com" required="" id="id_email">
-                <label for="full_name" class="">Email Address</label>
-              </div>
-            
+            <div class="md-form mb-5">
+              <input
+                {% if customer.name %}value="{{customer.name}}" {% endif %}
+                type="text"
+                name="full_name"
+                class="form-control"
+                placeholder="John Doe"
+                required=""
+                id="id_full_name"
+              />
+              <label for="full_name" class="">Full Name</label>
+            </div>
+
+            <div class="md-form mb-5">
+              <input
+                {% if customer.name %}value="{{customer.email}}"{% endif %}
+                type="text"
+                name="email"
+                class="form-control"
+                placeholder="JohnDoe@gmail.com"
+                required=""
+                id="id_email"
+              />
+              <label for="full_name" class="">Email Address</label>
+            </div>
+
             <div id="hideable_billing_id">
               <div class="hideable_billing_form">
                 <div class="md-form mb-5">
@@ -183,7 +167,7 @@
                 </div>
 
                 <div class="row">
-                  <div class="col-lg-4 col-md-12 mb-4">
+                  <div class="col-lg-4 col-md-12 mb-4 d-none">
                     <label for="country">Country</label>
                     {{ form.billing_country }}
                     <div class="invalid-feedback">
@@ -191,7 +175,7 @@
                     </div>
                   </div>
 
-                  <div class="col-lg-4 col-md-6 mb-4">
+                  <div class="col-lg-4 col-md-6 mb-4 d-none">
                     <label for="billing_zip">Zip</label>
                     <input
                       type="text"
@@ -224,7 +208,6 @@
               <label for="billing_address2" class="">Phone Number</label>
             </div>
 
-
             <h3>Payment option</h3>
 
             <div class="d-block my-3">
@@ -256,59 +239,13 @@
             {% endif %}
           </form>
         </div>
+        {% endif %}
       </div>
       <div class="col-lg-6">
         <div class="axil-order-summery order-checkout-summery">
           <h5 class="title mb--20">Your Order</h5>
           <div class="summery-table-wrap">
-            {% comment %}
-            <table class="table summery-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="order-product">
-                  <td>Commodo Blown Lamp <span class="quantity">x1</span></td>
-                  <td>$117.00</td>
-                </tr>
-                <tr class="order-product">
-                  <td>Commodo Blown Lamp <span class="quantity">x1</span></td>
-                  <td>$198.00</td>
-                </tr>
-                <tr class="order-subtotal">
-                  <td>Subtotal</td>
-                  <td>$117.00</td>
-                </tr>
-                <tr class="order-shipping">
-                  <td colspan="2">
-                    <div class="shipping-amount">
-                      <span class="title">Shipping Method</span>
-                      <span class="amount">$35.00</span>
-                    </div>
-                    <div class="input-group">
-                      <input type="radio" id="radio1" name="shipping" checked />
-                      <label for="radio1">Free Shippping</label>
-                    </div>
-                    <div class="input-group">
-                      <input type="radio" id="radio2" name="shipping" />
-                      <label for="radio2">Local</label>
-                    </div>
-                    <div class="input-group">
-                      <input type="radio" id="radio3" name="shipping" />
-                      <label for="radio3">Flat rate</label>
-                    </div>
-                  </td>
-                </tr>
-                <tr class="order-total">
-                  <td>Total</td>
-                  <td class="order-total-amount">$323.00</td>
-                </tr>
-              </tbody>
-            </table>
-            {% endcomment %} {% include "order_snippet.html" %}
+             {% include "order_snippet.html" %}
           </div>
         </div>
       </div>
@@ -318,6 +255,26 @@
 <!-- End Checkout Area  -->
 
 {% block extra_scripts %}
+<script>
+  document
+    .getElementById("submitButton")
+    .addEventListener("click", function () {
+      var form = document.getElementById("submit_location");
+      console.log(form, "my form");
+      var formData = new FormData(form);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "{% url 'core:submit_location' %}");
+      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          // Reload the page upon successful response
+          location.reload();
+        }
+      };
+      xhr.send(formData);
+    });
+</script>
 <script>
   function toggleBillingAddress() {
     const checkbox = document.getElementById("use_default_billing");
@@ -370,4 +327,183 @@
     }
   });
 </script>
+
+<script>
+  const form = document.querySelector(".form");
+  const dropdowns = document.querySelectorAll(".dropdown");
+
+  // Check if Dropdowns Exist
+  // Loop through Dropdowns and Create Custom Dropdown for each Select Element
+  if (dropdowns.length > 0) {
+    dropdowns.forEach((dropdown) => {
+      createCustomDropdown(dropdown);
+    });
+  }
+
+  // Check if Form Element Exists on the Page
+  if (form !== null) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+    });
+  }
+
+  // Create Custom Dropdown
+  function createCustomDropdown(dropdown) {
+    // Get All Select Options
+    // And Convert them from NodeList to Array
+    const options = dropdown.querySelectorAll("option");
+    const optionsArr = Array.prototype.slice.call(options);
+
+    // Create Custom Dropdown Element and Add Class Dropdown
+    const customDropdown = document.createElement("div");
+    customDropdown.classList.add("dropdown");
+    dropdown.insertAdjacentElement("afterend", customDropdown);
+
+    // Create Element for Selected Option
+    const selected = document.createElement("div");
+    selected.classList.add("dropdown-select");
+    customDropdown.appendChild(selected);
+
+    // Create Element for Dropdown Menu
+    // Add Class and Append it to Custom Dropdown
+    const menu = document.createElement("div");
+    menu.classList.add("dropdown-menu");
+    customDropdown.appendChild(menu);
+    selected.addEventListener("click", toggleDropdown.bind(menu));
+
+    // Create Search Input Element
+    const search = document.createElement("input");
+    search.placeholder = "Search...";
+    search.type = "text";
+    search.classList.add("dropdown-menu-search");
+    menu.appendChild(search);
+
+    // Create Wrapper Element for Menu Items
+    // Add Class and Append it to Menu Element
+    const menuInnerWrapper = document.createElement("div");
+    menuInnerWrapper.classList.add("dropdown-menu-inner");
+    menu.appendChild(menuInnerWrapper);
+
+    // Loop through All Options and Create Custom Option for Each Option
+    // Append it to Inner Wrapper Element
+    optionsArr.forEach((option) => {
+      const item = document.createElement("div");
+      item.classList.add("dropdown-menu-item");
+      item.dataset.value = option.value;
+      item.textContent = option.textContent;
+      menuInnerWrapper.appendChild(item);
+
+      item.addEventListener(
+        "click",
+        setSelected.bind(item, selected, dropdown, menu)
+      );
+
+      // Check if the Option is Selected and Add 'is-select' Class
+      if (option.selected) {
+        item.classList.add("is-select");
+        selected.textContent = option.textContent;
+        console.log(option.textContent, "selected i see")
+      }
+    });
+
+    // // If no option is selected, set the first option as the selected option
+    // if (!customDropdown.querySelector(".is-select")) {
+    //   const firstOption = customDropdown.querySelector(".dropdown-menu-item");
+    //   firstOption.classList.add("is-select");
+    //   selected.textContent = firstOption.textContent;
+    //   dropdown.value = firstOption.dataset.value;
+    // }
+
+    // Add Input Event to Search Input Element to Filter Items
+    // Add Click Event to Element to Close Custom Dropdown if Clicked Outside
+    // Hide the Original Dropdown (Select)
+    search.addEventListener(
+      "input",
+      filterItems.bind(search, optionsArr, menu)
+    );
+    document.addEventListener(
+      "click",
+      closeIfClickedOutside.bind(customDropdown, menu)
+    );
+    dropdown.style.display = "none";
+  }
+
+  // Toggle to Display or Hide Dropdown
+  function toggleDropdown() {
+    if (this.offsetParent !== null) {
+      this.style.display = "none";
+    } else {
+      this.style.display = "block";
+      this.querySelector("input").focus();
+    }
+  }
+
+  // Set Selected Option
+  function setSelected(selected, dropdown, menu) {
+    // Get Value and Label from Clicked Custom Option
+    const value = this.dataset.value;
+    const label = this.textContent;
+
+    // Change the Text on Selected Element
+    // Change the Value on Select Field
+    selected.textContent = label;
+    dropdown.value = value;
+
+    // Close the Menu
+    // Reset Search Input Value
+    // Remove 'is-select' Class from Previously Selected Option
+    // And Show All Divs if They Were Filtered
+    // Add 'is-select' Class to Clicked Option
+    menu.style.display = "none";
+    menu.querySelector("input").value = "";
+    menu.querySelectorAll("div").forEach((div) => {
+      if (div.classList.contains("is-select")) {
+        div.classList.remove("is-select");
+      }
+      if (div.offsetParent === null) {
+        div.style.display = "block";
+      }
+    });
+    this.classList.add("is-select");
+  }
+
+  // Filter the Items
+  function filterItems(itemsArr, menu) {
+    // Get All Custom Select Options
+    // Get Value of Search Input
+    // Get Filtered Items
+    // Get the Indexes of Filtered Items
+    const customOptions = menu.querySelectorAll(".dropdown-menu-inner div");
+    const value = this.value.toLowerCase();
+    const filteredItems = itemsArr.filter((item) =>
+      item.value.toLowerCase().includes(value)
+    );
+    const indexesArr = filteredItems.map((item) => itemsArr.indexOf(item));
+
+    // Check if Option is not Inside Indexes Array
+    // Hide it, and if it is Inside Indexes Array and Hidden, Show it
+    itemsArr.forEach((option) => {
+      if (!indexesArr.includes(itemsArr.indexOf(option))) {
+        customOptions[itemsArr.indexOf(option)].style.display = "none";
+      } else {
+        if (customOptions[itemsArr.indexOf(option)].offsetParent === null) {
+          customOptions[itemsArr.indexOf(option)].style.display = "block";
+        }
+      }
+    });
+  }
+
+  // Close Dropdown if Clicked Outside Dropdown Element
+  function closeIfClickedOutside(menu, e) {
+    if (
+      e.target.closest(".dropdown") === null &&
+      e.target !== this &&
+      menu.offsetParent !== null
+    ) {
+      menu.style.display = "none";
+    }
+  }
+</script>
+
+
 {% endblock extra_scripts %}

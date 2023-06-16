@@ -91,6 +91,7 @@
       <div class="card-body">
         <p><strong>Order Number:</strong> {{ order.id }}</p>
         <p><strong>Order Date:</strong> {{ order.ordered_date }}</p>
+        <p><strong>Location:</strong> {{ order.location.state }} --- ₦{{order.location.price}}</p>
         <p><strong>Payment Status:</strong> {{ order.payment.status }}</p>
         <p><strong>Amount Paid:</strong> {{ order.payment.amount }}</p>
         <p><strong>Trx Id:</strong> {{ order.payment.trx_ref }}</p>

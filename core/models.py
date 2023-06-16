@@ -206,11 +206,21 @@ class OrderItem(models.Model):
         return self.get_total_item_price()
 
 
+class LocationPrice(models.Model):
+    state = models.CharField(blank=True, max_length=15)
+    price = models.FloatField()
+
+    def __str__(self):
+        return self.state
+
+
 class Order(models.Model):
     # user = models.ForeignKey(settings.AUTH_USER_MODEL,
     #                          on_delete=models.CASCADE)
     user = models.ForeignKey(
         Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    location = models.ForeignKey(
+        LocationPrice, on_delete=models.SET_NULL, null=True, blank=True)
     ref_code = models.CharField(max_length=20, blank=True, null=True)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
@@ -251,6 +261,9 @@ class Order(models.Model):
         for order_item in self.items.all():
             total += order_item.get_final_price()
 
+        if self.location:
+            total += self.location.price
+
         if self.coupon:
             total -= self.coupon.amount
         return total
@@ -260,6 +273,9 @@ class Order(models.Model):
         for order_item in self.items.all():
             # print("hereeeeeee", order_item.get_total_item_price2())
             total += order_item.get_total_item_price2()
+
+        if self.location:
+            total += self.location.price
 
         if self.coupon:
             total -= self.coupon.amount
