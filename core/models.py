@@ -207,7 +207,7 @@ class OrderItem(models.Model):
 
 
 class LocationPrice(models.Model):
-    state = models.CharField(blank=True, max_length=15)
+    state = models.CharField(blank=False, max_length=1000)
     price = models.FloatField()
 
     def __str__(self):
