@@ -131,7 +131,7 @@ class Products(models.Model):
         })
 
     def get_add_to_cart_url(self):
-        return reverse("core:add-to-cart", kwargs={
+        return reverse("core:add-first-to-cart", kwargs={
             'slug': self.slug
         })
 
@@ -184,7 +184,7 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
-        return f"{self.quantity} of {self.item.product.name}"
+        return f"{self.quantity} of {self.item.product.name} variant color {self.item.color.name } size {self.item.size.name }"
 
     def get_total_item_price(self):
         if self.item.stock < self.quantity:

@@ -26,12 +26,18 @@
                         <div class="inner">
                             <div class="color-variant-wrapper">
                                 <ul class="color-variant">
-                                    <li class="color-extra-01 active"><span><span class="color"></span></span>
+                                    
+                                    {% for color in item.colors.all %}
+                                    <li class="color-extra-01 {% if forloop.first %} active{% endif %}" >
+                                        <span >
+                                            <span class="color" style="background-color: {{ color.color }}"></span>
+                                        </span>
                                     </li>
-                                    <li class="color-extra-02"><span><span class="color"></span></span>
+                                    {% endfor %}
+                                    {% comment %} <li class="color-extra-02"><span><span class="color"></span></span>
                                     </li>
                                     <li class="color-extra-03"><span><span class="color"></span></span>
-                                    </li>
+                                    </li> {% endcomment %}
                                 </ul>
                             </div>
                             <h5 class="title"><a href="{{ item.get_absolute_url }}">{{item.name}}</a></h5>

@@ -442,22 +442,35 @@ def confirm_payment(request):
     return JsonResponse({'val': val})
 
 
+def verify_transaction(transaction_id, secret_key):
+    url = f'https://api.flutterwave.com/v3/transactions/{transaction_id}/verify'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {secret_key}'
+    }
+
+    response = requests.get(url, headers=headers)
+    result = response.json()
+    return result
+
+
 @require_http_methods(['GET', 'POST'])
 def payment_response(request):
     status = request.GET.get('status', None)
     tx_ref = request.GET.get('tx_ref', None)
+    trx_id = request.GET.get('transaction_id', None)
     current_url = request.build_absolute_uri()
 
     if status == "cancelled":
         messages.info(request, "AN error occured, payment not successful!")
         return redirect("core:home")
     try:
-        val = rave.Card.verify(tx_ref)
+        val = verify_transaction(trx_id, secret_key)
         print(val)
     except ConnectionError as e:    # This is the correct syntax
+        print("error", str(current_url))
         redirect(str(current_url))
 
-    print(current_url)
     try:
         customer = request.user.customer
     except:
@@ -469,9 +482,14 @@ def payment_response(request):
         messages.info(request, "AN error occured, payment not successful!")
         return redirect("/")
 
-    if not val["transactionComplete"]:
+    if not val["status"] == "success":
         messages.info(
-            request, f"AN error occured, not verified your transaction ref: {tx_ref}!")
+            request, f"AN error occured, not verified your transaction id: {trx_id}!")
+        return redirect("/")
+
+    if Payment.objects.filter(trx_ref=trx_id).exists():
+        messages.info(
+            request, f"AN error occured, trasaction has been associated with another order transaction ref: {trx_id}!")
         return redirect("/")
     print(status)
     print(tx_ref)
@@ -479,7 +497,7 @@ def payment_response(request):
     try:
         # create the payment
         payment = Payment()
-        payment.trx_ref = tx_ref
+        payment.trx_ref = trx_id
         payment.status = status
         payment.user = customer
         payment.amount = order.get_total()
@@ -743,6 +761,7 @@ class OrderSummaryView(View):
                 'object': order,
                 'couponform': CouponForm(),
             }
+            context['categories'] = sub_Category.objects.all()[:8]
             return render(self.request, 'new/order_summary.html', context)
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
@@ -795,45 +814,39 @@ class ItemDetailView1(DetailView):
 
 
 @csrf_exempt
-def add_to_cart(request, slug):
-    item = get_object_or_404(Variants, id=slug)
+def add_to_cart(request, order_id):
+    print(order_id, "info data")
+    try:
+        customer = request.user.customer
+    except:
+        device = request.COOKIES['device']
+        customer, created = Customer.objects.get_or_create(device=device)
 
-    if item.stock > 0:
-        try:
-            customer = request.user.customer
-        except:
-            device = request.COOKIES['device']
-            customer, created = Customer.objects.get_or_create(device=device)
+    try:
+        item = get_object_or_404(OrderItem, id=order_id)
 
-        order_item, created = OrderItem.objects.get_or_create(
-            item=item,
-            user=customer,
-            ordered=False
-        )
+        # Reduce the quantity by one
+        item.quantity += 1
 
-        order_qs = Order.objects.filter(user=customer, ordered=False)
-        if order_qs.exists():
-            order = order_qs[0]
-            # check if the order item is in the order
-            if order.items.filter(item=item).exists():
-                order_item.quantity += 1
-                order_item.save()
-                messages.info(request, "This item quantity was updated.")
-                return redirect("core:order-summary")
-            else:
-                order.items.add(order_item)
-                messages.info(request, "This item was added to your cart.")
-                return redirect("core:order-summary")
-        else:
-            ordered_date = timezone.now()
-
-            order = Order.objects.create(
-                user=customer, ordered_date=ordered_date)
-            order.items.add(order_item)
-            messages.info(request, "This item was added to your cart.")
+        if item.quantity > 0:
+            # Save the updated quantity if it's still greater than zero
+            item.save()
+            messages.info(
+                request, f"{item.item.product.name} has been updated")
             return redirect("core:order-summary")
-    else:
-        messages.info(request, "This item out of Stock.")
+        else:
+            # Delete the OrderItem if the quantity becomes zero
+            messages.info(
+                request, f"{item.item.product.name} is been removed")
+            item.delete()
+
+            return redirect("core:order-summary")
+
+    except OrderItem.DoesNotExist:
+        # Handle the case where the object does not exist
+        # Perform any necessary actions or raise an exception
+        print("Order item does not exist in the database.")
+        messages.info(request, "This item was not in your cart")
         return redirect("core:order-summary")
 
 
@@ -941,39 +954,40 @@ def remove_from_cart(request, slug):
 
 
 @login_required
-def remove_single_item_from_cart(request, slug):
-    item = get_object_or_404(Variants, id=slug)
+def remove_single_item_from_cart(request, order_id):
+    print(order_id, "info data")
     try:
         customer = request.user.customer
     except:
         device = request.COOKIES['device']
         customer, created = Customer.objects.get_or_create(device=device)
-    order_qs = Order.objects.filter(
-        user=customer,
-        ordered=False
-    )
-    if order_qs.exists():
-        order = order_qs[0]
-        # check if the order item is in the order
-        if order.items.filter(item=item).exists():
-            order_item = OrderItem.objects.filter(
-                item=item,
-                user=customer,
-                ordered=False
-            )[0]
-            if order_item.quantity > 1:
-                order_item.quantity -= 1
-                order_item.save()
-            else:
-                order.items.remove(order_item)
-            messages.info(request, "This item quantity was updated.")
+
+    try:
+        item = get_object_or_404(OrderItem, id=order_id)
+
+        # Reduce the quantity by one
+        item.quantity -= 1
+
+        if item.quantity > 0:
+            # Save the updated quantity if it's still greater than zero
+            item.save()
+            messages.info(
+                request, f"{item.item.product.name} has been updated")
             return redirect("core:order-summary")
         else:
-            messages.info(request, "This item was not in your cart")
-            return redirect("core:product", slug=slug)
-    else:
-        messages.info(request, "You do not have an active order")
-        return redirect("core:product", slug=slug)
+            # Delete the OrderItem if the quantity becomes zero
+            messages.info(
+                request, f"{item.item.product.name} is been removed")
+            item.delete()
+
+            return redirect("core:order-summary")
+
+    except OrderItem.DoesNotExist:
+        # Handle the case where the object does not exist
+        # Perform any necessary actions or raise an exception
+        print("Order item does not exist in the database.")
+        messages.info(request, "This item was not in your cart")
+        return redirect("core:order-summary")
 
 
 def get_coupon(request, code):
@@ -1061,8 +1075,9 @@ class CategoryArticlesListView(ListView):
     template_name = 'new/category_view.html'
 
     def get_queryset(self):
+
         category = get_object_or_404(
-            sub_Category, name=self.kwargs.get('slug'))
+            sub_Category, name=self.kwargs.get('slug'), category__name=self.kwargs.get('cate'))
         return Products.objects.filter(category=category)
 
     def get_context_data(self, **kwargs):

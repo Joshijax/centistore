@@ -11,12 +11,23 @@
                             <div class="category-select">
 
                                 <!-- Start Single Select  -->
-                                <select class="single-select">
+                                <select class="single-select" onchange="redirectToCategory(this)">
                                     <option value="none" selected disabled hidden>Categories</option>
                                     {% for cate in categories %}
-                                    <option>{{cate.name}} for {{cate.category.name}}</option>
+                                    <option value="{{ cate.get_absolute_url }}">{{ cate }}</option>
                                     {% endfor %}
                                 </select>
+                                
+                                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                <script>
+                                    function redirectToCategory(selectElement) {
+                                        var selectedUrl = $(selectElement).val();
+                                        if (selectedUrl !== 'none') {
+                                            window.location.href = selectedUrl;
+                                        }
+                                    }
+                                </script>
+                                
                                 <!-- End Single Select  -->
 
                             </div>
