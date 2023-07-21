@@ -256,6 +256,12 @@ class Order(models.Model):
     def __str__(self):
         return self.user.device
 
+    def view_details(self):
+        url = reverse('dashboard:ord_details', args=[self.pk])
+        return mark_safe('<a target="_blank" href="%s">View Details</a>' % (url))
+
+    view_details.short_description = 'Order Details'  # Set the column header name
+
     def get_total(self):
         total = 0
         for order_item in self.items.all():

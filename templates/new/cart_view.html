@@ -31,9 +31,9 @@
                                     <td class="product-price" data-title="Price"><span class="currency-symbol">₦</span>{{ order_item.item.product.price }}</td>
                                     <td class="product-quantity" data-title="Qty">
                                         <div class="pro-qty">
-                                            
+                                            <a href="{% url 'core:remove-single-item-from-cart' order_item.id %}"><span class="dec qtybtn">-</span></a>
                                             <input type="number" class="quantity-input" value="{{ order_item.quantity }}" data-slug="{{ order_item.id}}"  data-orderitem="{{ order_item.id}}">
-                                            
+                                            <a href="{% url 'core:add-to-cart' order_item.id %}"><span class="inc qtybtn">+</span></a>
                                         </div>
                                     </td>
                                   
@@ -128,7 +128,7 @@
         <!-- End Cart Area  -->
          <!-- jQuery JS -->
       <script src="{% static 'assets/js/vendor/jquery.js' %}"></script>
-        <script>
+        {% comment %} <script>
             
                 $('.pro-qty').prepend('<span class="dec qtybtn">-</span>');
                 $('.pro-qty').append('<span class="inc qtybtn">+</span>');
@@ -191,4 +191,4 @@
                 });
             
             
-        </script>
+        </script> {% endcomment %}

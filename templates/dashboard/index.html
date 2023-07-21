@@ -289,12 +289,13 @@
 
           console.log(val, "kay")
 
-          if (val.transactionComplete) {
+          if (val.status === 'success') {
             resultHtml = '<p>Transaction Successful</p>';
-            resultHtml += '<p>Transaction Reference: ' + val.txRef + '</p>';
-            resultHtml += '<p><b>Amount Paid: ' + val.chargedamount + '</b></p>';
-            resultHtml += '<p>Flutterwave Ref: ' + val.flwRef + '</p>';
-            resultHtml += '<p>Check here: <a target=”_blank” href="https://app.flutterwave.com/dashboard/transactions/list/' + val.meta[0].getpaidTransactionId + '">' + 'Check here</a></p>';
+            resultHtml += '<p>Transaction Reference: ' + val.data.flw_ref + '</p>';
+            resultHtml += '<p><b>Amount Paid: ' + val.data.currency + ' '+ val.data.amount + '</b></p>';
+            resultHtml += '<p>Customers Name: ' + val.data.customer.name + '</p>';
+            resultHtml += '<p>Customers Name: ' + val.data.customer.email + '</p>';
+            resultHtml += '<p>Check here: <a target=”_blank” href="https://app.flutterwave.com/dashboard/transactions/list/' + val.data.id + '">' + 'Check here</a></p>';
             // Add other fields as desired
   
             $('#paymentResult').html(resultHtml);

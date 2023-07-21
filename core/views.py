@@ -425,23 +425,6 @@ class CheckoutView1(View):
             return redirect("core:order-summary")
 
 
-@csrf_exempt
-@require_http_methods(['GET', 'POST'])
-def confirm_payment(request):
-    tx_ref = request.GET.get('tx_ref', None)
-    current_url = request.build_absolute_uri()
-    print(current_url, "here again", tx_ref)
-
-    val = None
-    try:
-        val = rave.Card.verify(tx_ref)
-        print(val)
-    except RaveExceptions.TransactionVerificationError as e:
-        return JsonResponse({'error': e})
-
-    return JsonResponse({'val': val})
-
-
 def verify_transaction(transaction_id, secret_key):
     url = f'https://api.flutterwave.com/v3/transactions/{transaction_id}/verify'
     headers = {
@@ -454,12 +437,33 @@ def verify_transaction(transaction_id, secret_key):
     return result
 
 
+@csrf_exempt
+@require_http_methods(['GET', 'POST'])
+def confirm_payment(request):
+    tx_ref = request.GET.get('tx_ref', None)
+    current_url = request.build_absolute_uri()
+    # print(current_url, "here again", tx_ref)
+
+    val = None
+    try:
+        val = verify_transaction(tx_ref, secret_key)
+        # print(val)
+    except RaveExceptions.TransactionVerificationError as e:
+        return JsonResponse({'error': e})
+
+    if val['status'] != "success":
+        return JsonResponse({'error': val})
+
+    return JsonResponse({'val': val})
+
+
 @require_http_methods(['GET', 'POST'])
 def payment_response(request):
     status = request.GET.get('status', None)
     tx_ref = request.GET.get('tx_ref', None)
     trx_id = request.GET.get('transaction_id', None)
     current_url = request.build_absolute_uri()
+    val = None
 
     if status == "cancelled":
         messages.info(request, "AN error occured, payment not successful!")
@@ -481,10 +485,10 @@ def payment_response(request):
     if status != "successful":
         messages.info(request, "AN error occured, payment not successful!")
         return redirect("/")
-
+    print(val)
     if not val["status"] == "success":
         messages.info(
-            request, f"AN error occured, not verified your transaction id: {trx_id}!")
+            request, f"AN error occured, not verified your transaction id: {trx_id} !")
         return redirect("/")
 
     if Payment.objects.filter(trx_ref=trx_id).exists():
@@ -534,7 +538,7 @@ class HomeView(ListView):
     model = Products
     paginate_by = 10
     template_name = "index.html"
-    ordering = ['-id']
+    ordering = ['?']
 
     def get_context_data(self, **kwargs):
         """
@@ -546,10 +550,10 @@ class HomeView(ListView):
 
         context['bestseller'] = Products.objects.filter().order_by('-sold')
 
-        context['thisweek'] = Products.objects.filter().order_by('-id')[:6]
+        context['thisweek'] = Products.objects.filter().order_by('?')[:6]
 
-        context['explore'] = Products.objects.filter().order_by('-id')[:20]
-        context['explore2'] = Products.objects.filter().order_by('-id')[8:8]
+        context['explore'] = Products.objects.filter().order_by('?')[:20]
+        context['explore2'] = Products.objects.filter().order_by('?')[8:8]
         # context['cate'] = Products.objects.filter().order_by('-id')[8:8]
 
         return context
@@ -953,7 +957,7 @@ def remove_from_cart(request, slug):
         return redirect("core:product", slug=slug)
 
 
-@login_required
+@csrf_exempt
 def remove_single_item_from_cart(request, order_id):
     print(order_id, "info data")
     try:

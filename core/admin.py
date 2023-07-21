@@ -1,5 +1,8 @@
+from django.contrib.admin import ModelAdmin
+from django import forms
 from django.contrib import admin
-
+from django.urls import reverse
+from django.utils.html import format_html
 from .models import Customer, LocationPrice, Products, OrderItem, Variants, size, Order, Payment, Coupon, Refund, Address, UserProfile, sub_Category, Category, colors, Images
 
 
@@ -31,40 +34,35 @@ class LocationAdmin(admin.ModelAdmin):
     ]
 
 
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user',
-                    'ordered',
-                    "location",
-                    'being_delivered',
-                    'received',
-                    'refund_requested',
-                    'refund_granted',
-                    'shipping_address',
-                    'billing_address',
-                    'payment',
-                    "location",
-                    'coupon',
+class OrderAdminForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = '__all__'
 
-                    ]
-    list_display_links = [
-        'user',
-        'shipping_address',
-        'billing_address',
-        'payment',
-        'coupon'
-    ]
-    # readonly_fields = ('shipping_address',
-    #                 'billing_address', "items")
-    list_filter = ['ordered',
-                   'being_delivered',
-                   'received',
-                   'refund_requested',
-                   'refund_granted']
-    search_fields = [
-        'user__username',
-        'ref_code'
-    ]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        if instance and instance.pk:
+            selected_items = instance.items.all()
+            self.fields['items'].queryset = selected_items
+
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['view_details', 'user', 'ordered', 'location', 'being_delivered',
+                    'received', 'refund_requested', 'refund_granted', 'payment', 'coupon']
+    list_display_links = ['user', 'payment', 'coupon']
+    list_filter = ['ordered', 'being_delivered',
+                   'received', 'refund_requested', 'refund_granted']
+    search_fields = ['user__username', 'ref_code']
     actions = [make_refund_accepted]
+    readonly_fields = ('view_details',)
+    form = OrderAdminForm
+
+    # def view_details(self, obj):
+    #     url = reverse('ord_details', args=[obj.pk])
+    #     return format_html('<a href="{}">View Details</a>', url)
+
+    # view_details.short_description = 'Order Details'  # Set the column header name
 
 
 class variantInline(admin.StackedInline):
@@ -129,6 +127,7 @@ admin.site.register(Coupon)
 admin.site.register(size)
 admin.site.register(Refund)
 admin.site.register(Customer)
+admin.site.register(Variants)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(UserProfile)
 admin.site.register(LocationPrice, LocationAdmin)

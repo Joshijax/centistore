@@ -180,6 +180,7 @@
           <table class="table table-bordered">
             <thead>
               <tr>
+                <th scope="col">Image</th>
                 <th scope="col">Product Name</th>
                 <th scope="col">Size</th>
                 <th scope="col">Quantity</th>
@@ -190,6 +191,7 @@
             <tbody>
               {% for item in order.items.all %}
                 <tr>
+                  <td><img src="{{item.item.product.image.url}}" width="100"/></td>
                   <td>{{ item.item }}</td>
                   <td>{{ item.item.size.name }}</td>
                   <td>{{ item.quantity }}</td>
@@ -277,37 +279,37 @@
         url: '{% url "core:confirm" %}?tx_ref=' + txRef,  // Replace with the correct URL for your 
         data: { tx_ref: txRef }, // Pass txRef as data instead of a query parameter
         success: function(response) {
-          $('#paymentButton').prop('disabled', false).text('Verify Payment');
+          $button.prop('disabled', false).text('Verify Payment');
           // Update modal content with the payment result
           var val = response.val;
 
           console.log(val, "kay")
 
-          if (val.transactionComplete) {
+          if (val.status === 'success') {
             resultHtml = '<p>Transaction Successful</p>';
-            resultHtml += '<p>Transaction Reference: ' + val.txRef + '</p>';
-          resultHtml += '<p><b>Amount Paid: ' + val.chargedamount + '</b></p>';
-          resultHtml += '<p>Flutterwave Ref: ' + val.flwRef + '</p>';
-          resultHtml += '<p>Check here: <a target=”_blank” href="https://app.flutterwave.com/dashboard/transactions/list/' + val.meta[0].getpaidTransactionId + '">' + 'Check here</a></p>';
-          // Add other fields as desired
-
-          $('#paymentResult').html(resultHtml);
-
-          // Show the modal
-          $('#paymentModal').modal('show');
+            resultHtml += '<p>Transaction Reference: ' + val.data.flw_ref + '</p>';
+            resultHtml += '<p><b>Amount Paid: ' + val.data.currency + ' '+ val.data.amount + '</b></p>';
+            resultHtml += '<p>Customers Name: ' + val.data.customer.name + '</p>';
+            resultHtml += '<p>Customers Name: ' + val.data.customer.email + '</p>';
+            resultHtml += '<p>Check here: <a target=”_blank” href="https://app.flutterwave.com/dashboard/transactions/list/' + val.data.id + '">' + 'Check here</a></p>';
+            // Add other fields as desired
+  
+            $('#paymentResult').html(resultHtml);
+  
+            // Show the modal
+            $('#paymentModal').modal('show');
           } else {
             resultHtml = '<p>Transaction Failed</p>';
             $('#paymentResult').html(resultHtml);
-
+  
             // Show the modal
             $('#paymentModal').modal('show');
           }
-          
+         
         },
         error: function(xhr, status, error) {
           // Handle error if necessary
-
-          $('#paymentButton').prop('disabled', false).text('Verify Payment');
+          $button.prop('disabled', false).text('Verify Payment');
           resultHtml = '<p>Transaction Failed</p>';
           $('#paymentResult').html(resultHtml);
 
